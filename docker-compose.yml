@@ -1,0 +1,16 @@
+version: '3'
+services:
+  nodeserver:
+    build: .
+    ports:
+      - "3333:3333"
+    command: npm run dev
+    volumes:
+      - .:/app/
+      - /app/node_modules"
+  rethinkdb:
+    image: rethinkdb
+    command: rethinkdb --bind all
+    ports:
+      - "8888:8080"
+      - "28015:28015"
