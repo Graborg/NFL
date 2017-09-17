@@ -12,6 +12,8 @@ services:
       - ./middleware:/app/middleware
       - ./plugins:/app/plugins
       - ./utils:/app/utils
+      - ./utils.js:/app/utils.js
+      - ./nuext.config.js:/app/nuxt.config.js
   rethinkdb:
     image: rethinkdb
     command: rethinkdb --bind all
