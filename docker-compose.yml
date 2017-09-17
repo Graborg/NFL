@@ -6,14 +6,15 @@ services:
       - "3333:3333"
     command: npm run dev
     volumes:
-      - ./lib:/app/assets
+      - ./assets:/app/assets
       - ./components:/app/components
       - ./pages:/app/pages
       - ./middleware:/app/middleware
       - ./plugins:/app/plugins
+      - ./static:/app/static
       - ./utils:/app/utils
       - ./utils.js:/app/utils.js
-      - ./nuext.config.js:/app/nuxt.config.js
+      - ./nuxt.config.js:/app/nuxt.config.js
   rethinkdb:
     image: rethinkdb
     command: rethinkdb --bind all
