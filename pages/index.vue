@@ -33,7 +33,6 @@
       </v-data-table>
       <v-list>
         <v-list-tile
-          class="pt-1"
           value="true"
           v-for="(game, is) in games"
           :ripple="false"
