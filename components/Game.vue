@@ -17,9 +17,6 @@
         </v-btn>
       </v-card>
       </v-flex>
-      <v-flex xs2>
-        {{game.status}}
-      </v-flex>
       <v-flex xs2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal">
           {{submitBtnText}}
@@ -31,11 +28,12 @@
 </template>
 
 <script>
-const moment = require('moment')
+const moment = require('moment-timezone')
+const axios = require('axios')
 moment.updateLocale('en', {
   relativeTime: {
     future: '%s left',
-    past: 'no deadline specified...',
+    past: 'no new deadline specified...',
     s: '%d seconds',
     ss: '%d seconds',
     m: '%d minute',
@@ -58,34 +56,53 @@ export default {
       passiveBtn: 'indigo white--text',
       homeBtnClass: 'indigo white--text',
       tieBtnClass: 'indigo white--text',
-      awayBtnClass: 'indigo white--text'
+      awayBtnClass: 'indigo white--text',
+      selectedTeam: '',
+      selectedOutcome: ''
     }
   },
   methods: {
-    deadline () {
+    updateSubmitBtn () {
       let self = this
-      const deadlineArray = this.game.deadlineDate.split(/[-:]/)
-      deadlineArray[1] -= 1
-      let timeToDeadline = moment(deadlineArray).fromNow()
-      if (this.submitted) {
-        this.submitBtnText = `Waiting for game to start`
-      } else if (this.game.status === 'closed') {
-        this.locked = true
-        this.submitBtnText = `There's no goin' back now`
-      } else {
-        if (this.outcomeSelected) {
-          this.submitBtnText = `Submit (${timeToDeadline})`
-        } else {
-          this.submitBtnText = `Choose outcome (${timeToDeadline})`
-        }
+
+      let timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+      const gameStatus = this.game.status
+
+      switch (gameStatus) {
+        case 'closed':
+          this.submitBtnText = `Game finished`
+          break
+        case 'inprogress':
+          this.submitBtnText = `Waiting for stats`
+          break
+        case 'postponed':
+          this.submitBtnText = `Choose outcome (postponed)`
+          break
+        default: // Still open
+          if (this.submitted) {
+            this.submitBtnText = `Waiting for game to start`
+          } else if (timeToDeadline < 0) {
+            this.lock = true
+            this.submitBtnText = `There's no goin' back now`
+          } else if (this.outcomeSelected) {
+            this.submitBtnText = `Submit (${timeToDeadline})`
+          } else {
+            this.submitBtnText = `Choose outcome (${timeToDeadline})`
+          }
       }
-      requestAnimationFrame(self.deadline)
+      requestAnimationFrame(self.updateSubmitBtn)
     },
     toggleTeamChoice (event) {
       if (!this.locked && !this.submitted) {
         this.outcomeSelected = !this.outcomeSelected
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
+        this.selectedTeam = event.currentTarget.innerText
+        if (this.selectedTeam === '---') { // Tie
+          this.selectedOutcome = 'tie'
+        } else {
+          this.selectedOutcome = this.selectedTeam === this.game.awayTeam ? 'away' : 'home'
+        }
 
         for (var i = 0; i < targetBtnSiblings.length; i++) {
           const classList = targetBtnSiblings[i].firstChild.classList
@@ -114,6 +131,13 @@ export default {
     },
     submit () {
       this.submitted = !this.submitted
+      if (this.submitted) {
+        axios.put('http://localhost:3333/api/users/pudding/bets', {
+          gameId: this.game.id,
+          teamName: this.selectedTeam,
+          outcome: this.selectedOutcome // Home/away/tie
+        })
+      }
     }
   },
   mounted: function () {
@@ -130,11 +154,10 @@ export default {
         this.tieBtnClass = 'green white--text'
       }
     }
-    this.deadline()
+    this.updateSubmitBtn()
   }
 }
 </script>
-
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 h1, h2 {

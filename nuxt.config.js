@@ -3,7 +3,7 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: 'nationalflapsleauge',
+    title: 'national flaps leauge',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -14,6 +14,11 @@ module.exports = {
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons' }
     ]
   },
+  api: {
+    baseURL: 'http://localhost:3333'
+  },
+  serverMiddleware: ['serverMiddleware/api.js'],
+  // serverMiddleware: [{ path: '/api', handler: 'serverMiddleware/api.js' }],
   plugins: [ {src: '~/plugins/vuetify.js', ssr: true}],
   css: [
     '~/assets/style/app.styl'
