@@ -1,25 +1,25 @@
 <template>
-  <v-container fluid>
-    <v-layout row class='grey lighten-4'>
-      <v-flex xs3>
+  <v-container fluid text-xs-center>
+    <v-layout row wrap class='grey lighten-4'>
+      <v-flex xs5>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="awayBtnClass">
-          <div class="headline">{{game.homeTeam}}</div>
+          <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
-      <v-flex xs1>
+      <v-flex text-xs2-center>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="tieBtnClass">
-          <div class="headline">---</div>
+          <div class="body-1 btn-text">-</div>
         </v-card>
       </v-flex>
-      <v-flex xs3>
+      <v-flex xs5>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="homeBtnClass">
-          <div class="headline">{{game.awayTeam}}</div>
+          <div class="body-1 btn-text">{{game.awayTeam}}</div>
         </v-btn>
       </v-card>
       </v-flex>
-      <v-flex xs2 class="submit">
-        <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal">
-          {{submitBtnText}}
+      <v-flex xs12 class="submit">
+        <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
+          <div class="body-1"> {{submitBtnText}} </div>
           <v-progress-circular v-if="submitted && outcomeSelected" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
         </v-btn>
       </v-flex>
@@ -173,11 +173,17 @@ ul {
 }
 
 .card {
-  margin-left: 10px;
+  margin-left: 5px;
+  margin-right: 5px;
+  min-height: 42px;
+  padding: 0px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
+
 li {
   display: inline-block;
-  margin: 0 10px;
 }
 
 a {
@@ -187,4 +193,19 @@ a {
   margin-left: 10px !important;
   margin-right: -10px !important;
 }
+
+.fluid {
+  padding: 0px;
+}
+.btn-text{
+  text-align: center;
+}
+
+btn.submit {
+  width: 80%;
+  margin-right: 5px;
+}
+.body-1 {
+}
+
 </style>
