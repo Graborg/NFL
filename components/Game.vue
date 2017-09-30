@@ -93,7 +93,7 @@ export default {
       requestAnimationFrame(self.updateSubmitBtn)
     },
     toggleTeamChoice (event) {
-      if (!this.locked && !this.submitted) {
+      if (!this.locked && !this.submitted && this.game.status !== 'closed') {
         this.outcomeSelected = !this.outcomeSelected
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
