@@ -17,6 +17,7 @@ services:
       - ./nuxt.config.js:/app/nuxt.config.js
       - ./serverMiddleware:/app/serverMiddleware
       - ./adapters:/app/adapters
+      - ./config.json:/app/config.json
   rethinkdb:
     image: rethinkdb
     command: rethinkdb --bind all

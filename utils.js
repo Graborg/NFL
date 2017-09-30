@@ -1,5 +1,6 @@
 const axios = require('axios')
 const dbAdapter = require('./adapters/rethink')
+const config = require('./config')
 
 function getOutcome (game) {
   let outcome = game.scoring
@@ -32,7 +33,7 @@ function formatGamesFromUrl (allformattedGames, week, weekNo) {
 module.exports = {
   updateGamesDb: () => {
     console.log('GETTN DATA!')
-    return axios.get('https://api.sportradar.us/nfl-ot2/games/2017/reg/schedule.json?api_key=sfncrmg78s8erq3hd3gy8h76')
+    return axios.get(`https://api.sportradar.us/nfl-ot2/games/2017/reg/schedule.json?api_key=${config.sportRadar.api_key}`)
       .then(res => res.data.weeks)
       .then(weeks => weeks.reduce(formatGamesFromUrl, []))
       .then(dbAdapter.insertGames)
