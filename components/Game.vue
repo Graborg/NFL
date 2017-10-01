@@ -1,23 +1,23 @@
 <template>
   <v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
-      <v-flex xs5>
+      <v-flex xs5 md4>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="awayBtnClass">
           <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
-      <v-flex text-xs2-center>
+      <v-flex text-xs2-center md1>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="tieBtnClass">
           <div class="body-1 btn-text">-</div>
         </v-card>
       </v-flex>
-      <v-flex xs5>
+      <v-flex xs5 md4>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="homeBtnClass">
           <div class="body-1 btn-text">{{game.awayTeam}}</div>
         </v-btn>
       </v-card>
       </v-flex>
-      <v-flex xs12 class="submit">
+      <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
           <div class="body-1"> {{submitBtnText}} </div>
           <v-progress-circular v-if="submitted && outcomeSelected" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
