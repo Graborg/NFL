@@ -1,5 +1,7 @@
 
 <template>
+  <div id="__nuxt">
+
   <v-app light>
     <v-toolbar fixed>
       <v-toolbar-title v-text="title"></v-toolbar-title>
@@ -31,6 +33,10 @@
           <td class="text-xs-left">{{ props.item.successRate }}</td>
         </template>
       </v-data-table>
+      <v-toolbar :class="" :dark="true">
+        <v-spacer></v-spacer>
+        <v-switch label="Show finished games" v-model="showClosedGames" dark></v-switch>
+      </v-toolbar>
       <v-list>
         <v-list-tile
           value="true"
@@ -38,7 +44,7 @@
           :ripple="false"
           :key="is"
         >
-          <v-list-tile-content>
+          <v-list-tile-content v-if="game.status !== 'closed' || showClosedGames">
             <Game :game="game"></Game>
           </v-list-tile-content>
         </v-list-tile>
@@ -46,6 +52,8 @@
     </main>
     <!-- <log></log> -->
   </v-app>
+</div>
+
 </template>
 
 <script>
@@ -66,6 +74,7 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
+        showClosedGames: false,
         clipped: false,
         fixed: false,
         right: true,
