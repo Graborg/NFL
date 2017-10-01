@@ -33,10 +33,11 @@
           <td class="text-xs-left">{{ props.item.successRate }}</td>
         </template>
       </v-data-table>
-      <v-toolbar :class="" :dark="true">
-        <v-spacer></v-spacer>
-        <v-switch label="Show finished games" v-model="showClosedGames" dark></v-switch>
-      </v-toolbar>
+      <div class="filterscontainer">
+        <v-toolbar xs-12 class="filters" :dark="true">
+          <v-switch left label="Show finished games" v-model="showClosedGames" dark></v-switch>
+        </v-toolbar>
+      </div >
       <v-list>
         <v-list-tile
           value="true"
@@ -120,8 +121,8 @@
     margin-top:7px !important;
   }
   img {
-    max-width:100%;
-    max-height:100%;
+    max-width:90%;
+    max-height:90%;
   }
   th:first-child{
     padding: 0px !important;
@@ -137,5 +138,13 @@
   }
   .avatar {
     padding-right: 0px !important;
+  }
+  .filterscontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  nav.toolbar.filters {
+    margin: 10px 5px -10px  5px !important;
   }
 </style>
