@@ -27,7 +27,7 @@
               <img :src="props.item.avatar" >
             </v-avatar>
           </td>
-          <td class="text-xs-left">{{ props.item.name }}</td>
+          <td class="body-2 text-xs-left player-name">{{ props.item.name }}</td>
           <td class="text-xs-left">{{ props.item.points }}</td>
           <td class="text-xs-left">{{ props.item.streak }}</td>
           <td class="text-xs-left">{{ props.item.successRate }}</td>
@@ -123,12 +123,19 @@
     max-width:100%;
     max-height:100%;
   }
-  th:first-child {
-    width: 1%;
+  th:first-child{
+    padding: 0px !important;
+    width: 1% !important;
   }
 
   div.list__tile {
     padding: 0 0px !important;
     height: 100%;
+  }
+  .player-name {
+    padding-left: 4px !important;
+  }
+  .avatar {
+    padding-right: 0px !important;
   }
 </style>
