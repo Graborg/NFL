@@ -45,11 +45,11 @@ moment.updateLocale('en', {
 export default {
   name: 'game',
   props: ['game'],
-  data () {
+  data: function () {
     return {
       outcomeSelected: false,
       deadlineDate: '',
-      submitBtnText: 'Choose outcome',
+      submitBtnText: 'LOADING...',
       submitted: false,
       locked: false,
       activeBtn: 'indigo lighten-1 white--text',

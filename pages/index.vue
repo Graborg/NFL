@@ -35,21 +35,26 @@
       </v-data-table>
       <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
-          <v-switch left label="Show finished games" v-model="showClosedGames" dark></v-switch>
+          <v-switch left label="Show old and finished games" v-model="showClosedGames" dark></v-switch>
         </v-toolbar>
       </div >
-      <v-list>
-        <v-list-tile
-          value="true"
-          v-for="(game, is) in games"
-          :ripple="false"
-          :key="is"
-        >
-          <v-list-tile-content v-if="game.status !== 'closed' || showClosedGames">
-            <Game :game="game"></Game>
-          </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+      <v-expansion-panel expand>
+        <v-expansion-panel-content v-if="withinWeekRange(week)" v-for="(week, i) in 16" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } ">
+          <div slot="header">Week {{week}}</div>
+          <v-list>
+            <v-list-tile
+              value="true"
+              v-for="(game, is) in games"
+              :ripple="false"
+              :key="is"
+            >
+            <v-list-tile-content v-if="game.week === week && !oldAndClosed(game) || showClosedGames">
+              <Game :game="game"></Game>
+            </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </main>
     <!-- <log></log> -->
   </v-app>
@@ -60,8 +65,9 @@
 <script>
   import Game from '../components/Game'
   const utils = require('../utils')
+  const moment = require('moment')
   export default {
-    data () {
+    data: function () {
       return {
         headers: [
           { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah' },
@@ -76,6 +82,7 @@
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
         showClosedGames: false,
+        currentGameWeek: moment().week() - 36,
         clipped: false,
         fixed: false,
         right: true,
@@ -87,13 +94,20 @@
       }
     },
     methods: {
+      withinWeekRange: function (week) {
+        const lowestWeek = this.showClosedGames ? 1 : this.currentGameWeek - 1
+        const highestWeek = this.currentGameWeek + 5
+
+        return week >= lowestWeek && week <= highestWeek
+      },
+      oldAndClosed: function (game) {
+        return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
+      }
     },
     components: {Game},
-    mounted: function () {
-      // this.getGames()
-    },
     async asyncData () {
-      return utils.updateGamesDb()
+      console.log(utils.default)
+      return utils.default.updateGamesDb()
         .then(games => ({
           games
         }))
@@ -146,5 +160,8 @@
   }
   nav.toolbar.filters {
     margin: 10px 5px -10px  5px !important;
+  }
+  .expansion-panel {
+    margin-top: 15px;
   }
 </style>

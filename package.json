@@ -18,7 +18,7 @@
     "nuxt": "^1.0.0-rc6",
     "rethinkdbdash": "^2.3.31",
     "tls": "0.0.1",
-    "vuetify": "^0.15.2"
+    "vuetify": "0.15"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",
