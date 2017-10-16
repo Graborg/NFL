@@ -1,4 +1,5 @@
 const axios = require('axios')
+const moment = require('moment')
 const dbAdapter = require('./adapters/rethink')
 const config = require('./config')
 
@@ -29,14 +30,33 @@ function formatGamesFromUrl (allformattedGames, week, weekNo) {
   }))
   return allformattedGames.concat(formattedGames)
 }
+function dataCollectedToday () {
+  const today = moment().format('YYYY-MM-DD')
 
-module.exports = {
-  updateGamesDb: () => {
+  return dbAdapter.getCollectedDate()
+    .then(date => today === date)
+}
+
+function updateCollectedTimestamp () {
+  const today = moment().format('YYYY-MM-DD')
+  return dbAdapter.setCollectedDate(today)
+}
+
+async function updateGamesDb () {
+  if (await dataCollectedToday()) {
+    return dbAdapter.getGames()
+  } else {
     console.log('GETTN DATA!')
     return axios.get(`https://api.sportradar.us/nfl-ot2/games/2017/reg/schedule.json?api_key=${config.sportRadar.api_key}`)
       .then(res => res.data.weeks)
       .then(weeks => weeks.reduce(formatGamesFromUrl, []))
       .then(dbAdapter.insertGames)
+      .then(updateCollectedTimestamp)
+      .then(dbAdapter.getGames)
       .catch(console.log)
   }
+}
+
+export default {
+  updateGamesDb
 }

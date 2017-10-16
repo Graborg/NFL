@@ -8,10 +8,32 @@ function insertGames (games) {
     .catch(console.log)
 }
 
+function getGames () {
+  return r.db('nfl').table('games')
+}
+
 function getUserBets (userId) {
   return r.db('nfl').table('users')
 }
 
+function setCollectedDate (date) {
+  return r.db('nfl').table('timestamps')
+    .get('gamesDataCollected')
+    .replace({
+      id: 'gamesDataCollected',
+      date
+    })
+}
+
+function getCollectedDate () {
+  return r.db('nfl').table('timestamps')
+    .get('gamesDataCollected')
+    .then(res => {
+      if (!res) return
+
+      return res.date
+    })
+}
 function updateBet (username, gameId, teamName, outcome) {
   return r.db('nfl')
     .table('users')
@@ -30,5 +52,8 @@ function updateBet (username, gameId, teamName, outcome) {
 module.exports = {
   insertGames,
   getUserBets,
-  updateBet
+  updateBet,
+  getGames,
+  setCollectedDate,
+  getCollectedDate
 }
