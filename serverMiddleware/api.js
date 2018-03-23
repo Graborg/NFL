@@ -1,13 +1,15 @@
-const dbAdapter = require('../adapters/rethink')
+const dbAdapter = require('./rethinkdb')
 const express = require('express')
 const bodyParser = require('body-parser');
 
 const app = express()
 app.use(bodyParser.json())
 
-app.put('/users/:username/bets', (req, res) => {
-  console.log('do we even try', req.params)
-  let { params: {username}, body: {gameId, teamName, outcome}} = req
+
+app.put('/users/:username/bets', async (req, res) => {
+
+  let { body: {gameId, teamName, outcome } } = req
+  username = await dbAdapter.getUserFromAuth(req.header('Authorization'))
   return dbAdapter.updateBet(username, gameId, teamName, outcome)
     .then(console.log)
     .catch(console.log)
@@ -19,6 +21,18 @@ app.get(`/users/:username/bets`, (req, res) => {
     .then(bets => {
         res.json({
             it: bets
+        })
+    })
+})
+
+app.put(`/users/:username/auth`, (req, res) => {
+  let { params: { username }, body: { token } } = req
+  console.log('updating token');
+  return dbAdapter.addAuthTokenToUser(username, token)
+    .then(user => {
+        console.log('usea', user);
+        res.json({
+            id: user.id
         })
     })
 })

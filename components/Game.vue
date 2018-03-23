@@ -132,10 +132,16 @@ export default {
     submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        axios.put('http://localhost:3333/api/users/pudding/bets', {
-          gameId: this.game.id,
-          teamName: this.selectedTeam,
-          outcome: this.selectedOutcome // Home/away/tie
+        const username = localStorage.getItem('username')
+        axios({
+          method: 'put',
+          url: `http://localhost:3333/api/users/${username}/bets`,
+          headers: {Authorization: localStorage.getItem('googleToken')},
+          data: {
+            gameId: this.game.id,
+            teamName: this.selectedTeam,
+            outcome: this.selectedOutcome // Home/away/tie
+          }
         })
       }
     }

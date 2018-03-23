@@ -1,22 +1,24 @@
-import * as dbdash from 'rethinkdbdash'
-const r = dbdash({
+'use strict'
+
+const r = require('rethinkdbdash')({
   servers: [{ host: 'rethinkdb', port: 28015 }]
 })
-export function insertGames (games) {
+
+function insertGames (games) {
   return r.db('nfl').table('games').insert(games, {conflict: 'update'})
     .then(() => games)
     .catch(console.log)
 }
 
-export function getGamesFromDb () {
+function getGames () {
   return r.db('nfl').table('games')
 }
 
-export function getUserBets (userId) {
+function getUserBets (userId) {
   return r.db('nfl').table('users')
 }
 
-export function setCollectedDate (date) {
+function setCollectedDate (date) {
   return r.db('nfl').table('timestamps')
     .get('gamesDataCollected')
     .replace({
@@ -25,19 +27,16 @@ export function setCollectedDate (date) {
     })
 }
 
-export async function getCollectedDate () {
-  console.log('problem')
-  let ho = await r.db('nfl').table('timestamps').run()
-  console.log('hohoho')
-  console.log(ho)
-  // .get('gamesDataCollected')
-  // .then(res => {
-  //   if (!res) return
-  //
-  //   return res.date
-  // })
+function getCollectedDate () {
+  return r.db('nfl').table('timestamps')
+    .get('gamesDataCollected')
+    .then(res => {
+      if (!res) return
+
+      return res.date
+    })
 }
-export function updateBet (username, gameId, teamName, outcome) {
+function updateBet (username, gameId, teamName, outcome) {
   return r.db('nfl')
     .table('users')
     .filter({ username })
@@ -51,13 +50,24 @@ export function updateBet (username, gameId, teamName, outcome) {
         })
     }))
 }
-export function addAuthTokenToUser (username, token) {
+function addAuthTokenToUser (username, token) {
   return r.db('nfl')
     .table('users')
     .filter({ username })
     .update({ token })
 }
 
-export function getUserFromAuth () {
+function getUserFromAuth () {
   return Promise.resolve('intemicke@gmail.com')
+}
+
+module.exports = {
+  insertGames,
+  getUserBets,
+  updateBet,
+  getGames,
+  setCollectedDate,
+  getCollectedDate,
+  addAuthTokenToUser,
+  getUserFromAuth
 }

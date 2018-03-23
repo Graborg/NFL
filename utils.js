@@ -31,20 +31,29 @@ function formatGamesFromUrl (allformattedGames, week, weekNo) {
   return allformattedGames.concat(formattedGames)
 }
 function dataCollectedToday () {
-  const today = moment().format('YYYY-MM-DD')
-
-  return dbAdapter.getCollectedDate()
-    .then(date => today === date)
+  // const today = moment().format('YYYY-MM-DD')
+  return true
+  // return dbAdapter.getCollectedDate()
+  //   .then(date => today === date)
 }
 
 function updateCollectedTimestamp () {
-  const today = moment().format('YYYY-MM-DD')
-  return dbAdapter.setCollectedDate(today)
+  // const today = moment().format('YYYY-MM-DD')
+  // return dbAdapter.setCollectedDate(today)
 }
 
-async function updateGamesDb () {
+async function getGames (token) {
+  console.log('ye', token)
   if (await dataCollectedToday()) {
-    return dbAdapter.getGames()
+    console.log('did we')
+    const games = await axios.get(config.serverUrl + '/games') dbAdapter.getGames()
+    const username = await dbAdapter.getUserFromAuth(token)
+    const userBets = await dbAdapter.getUserBets(username)
+    return games.map(game => {
+      Object.assign({}, game,
+        userBets.find(bet => bet.id === game.id)
+      )
+    })
   } else {
     console.log('GETTN DATA!')
     return axios.get(`https://api.sportradar.us/nfl-ot2/games/2017/reg/schedule.json?api_key=${config.sportRadar.api_key}`)
@@ -52,11 +61,13 @@ async function updateGamesDb () {
       .then(weeks => weeks.reduce(formatGamesFromUrl, []))
       .then(dbAdapter.insertGames)
       .then(updateCollectedTimestamp)
-      .then(dbAdapter.getGames)
+      .then(getGames)
       .catch(console.log)
   }
 }
 
-export default {
-  updateGamesDb
+export {
+  getGames,
+  updateCollectedTimestamp,
+  formatGamesFromUrl
 }

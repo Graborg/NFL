@@ -1,8 +1,9 @@
 
 <template>
+
   <div id="__nuxt">
 
-  <v-app light>
+  <v-app light v-if="signedIn">
     <v-toolbar fixed>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
@@ -58,12 +59,16 @@
     </main>
     <!-- <log></log> -->
   </v-app>
+
+  <Auth v-else v-on:loggedIn="signedIn = true">
+  </Auth>
 </div>
 
 </template>
 
 <script>
   import Game from '../components/Game'
+  import Auth from '../components/Auth'
   const utils = require('../utils')
   const moment = require('moment')
   export default {
@@ -86,6 +91,7 @@
         clipped: false,
         fixed: false,
         right: true,
+        signedIn: false,
         rightDrawer: false,
         datenow: '',
         games: [],
@@ -104,13 +110,24 @@
         return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
       }
     },
-    components: {Game},
+    components: {Game, Auth},
     async asyncData () {
-      console.log(utils.default)
-      return utils.default.updateGamesDb()
-        .then(games => ({
-          games
-        }))
+      if (typeof (Storage) !== 'undefined') {
+        return utils.getGames(localStorage.getItem('googleToken'))
+          .then(games => ({
+            games
+          }))
+      }
+    },
+    async mounted () {
+      console.log('lolS')
+      this.signedIn = !!localStorage.getItem('username')
+      console.log(this.games)
+      this.games = await utils.getGames(localStorage.getItem('googleToken'))
+      // .then(games => ({
+      //   games
+      // }))
+      console.log(this.games.games)
     }
   }
 </script>
