@@ -1,11 +1,3 @@
-<template>
-  <div id="__nuxt">
-    <nuxt-loading ref="loading"></nuxt-loading>
-    <component v-if="layout" :is="nuxt.err ? 'nuxt' : layout"></component>
-  </div>
-</template>
-
-<script>
 import Vue from 'vue'
 import NuxtLoading from './components/nuxt-loading.vue'
 
@@ -21,13 +13,39 @@ let layouts = {
 let resolvedLayouts = {}
 
 export default {
-  head: {"title":"national flaps leauge","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Nuxt.js + Vuetify.js project"}],"link":[{"rel":"icon","type":"image/x-icon","href":"/favicon.ico"},{"rel":"stylesheet","href":"https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons"}],"style":[],"script":[]},
+  head: {"title":"national flaps leauge","meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"},{"hid":"description","name":"description","content":"Nuxt.js + Vuetify.js project"},{"name":"google-signin-client_id","content":"349826698169-qbn1ieku6pdpt03emlgi5i3q2aa7itl9.apps.googleusercontent.com"}],"script":[{"src":"https:\u002F\u002Fapis.google.com\u002Fjs\u002Fplatform.js?onload=onLoad"}],"link":[{"rel":"icon","type":"image\u002Fx-icon","href":"\u002Ffavicon.ico"},{"rel":"stylesheet","href":"https:\u002F\u002Ffonts.googleapis.com\u002Fcss?family=Roboto:300,400,500,700|Material+Icons"}],"style":[]},
+  render(h, props) {
+    const loadingEl = h('nuxt-loading', { ref: 'loading' })
+    const layoutEl = h(this.layout || 'nuxt')
+    const templateEl = h('div', {
+      domProps: {
+        id: '__layout'
+      },
+      key: this.layoutName
+    }, [ layoutEl ])
+
+    const transitionEl = h('transition', {
+      props: {
+        name: 'layout',
+        mode: 'out-in'
+      }
+    }, [ templateEl ])
+
+    return h('div',{
+      domProps: {
+        id: '__nuxt'
+      }
+    }, [
+      loadingEl,
+      transitionEl
+    ])
+  },
   data: () => ({
     layout: null,
     layoutName: ''
   }),
   beforeCreate () {
-    Vue.util.defineReactive(this, 'nuxt', this.$options._nuxt)
+    Vue.util.defineReactive(this, 'nuxt', this.$options.nuxt)
   },
   created () {
     // Add this.$nuxt in child instances
@@ -86,5 +104,4 @@ export default {
     NuxtLoading
   }
 }
-</script>
 

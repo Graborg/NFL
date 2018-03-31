@@ -1,5 +1,5 @@
 const axios = require('axios')
-const moment = require('moment')
+// const moment = require('moment')
 const dbAdapter = require('./adapters/rethink')
 const config = require('./config')
 
@@ -46,14 +46,17 @@ async function getGames (token) {
   console.log('ye', token)
   if (await dataCollectedToday()) {
     console.log('did we')
-    const games = await axios.get(config.serverUrl + '/games') dbAdapter.getGames()
-    const username = await dbAdapter.getUserFromAuth(token)
-    const userBets = await dbAdapter.getUserBets(username)
-    return games.map(game => {
-      Object.assign({}, game,
-        userBets.find(bet => bet.id === game.id)
-      )
-    })
+    let games
+    games = await axios.get(`http://${config.serverUrl}/games`)
+      .then(res => res.data.games)
+    // const username = await dbAdapter.getUserFromAuth(token)
+    // const userBets = await dbAdapter.getUserBets(username)
+    return games
+    // return games.map(game => {
+    //   Object.assign({}, game,
+    //     userBets.find(bet => bet.id === game.id)
+    //   )
+    // })
   } else {
     console.log('GETTN DATA!')
     return axios.get(`https://api.sportradar.us/nfl-ot2/games/2017/reg/schedule.json?api_key=${config.sportRadar.api_key}`)

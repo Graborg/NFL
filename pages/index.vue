@@ -34,11 +34,11 @@
           <td class="text-xs-left">{{ props.item.successRate }}</td>
         </template>
       </v-data-table>
-      <div class="filterscontainer">
+      <!-- <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
           <v-switch left label="Show old and finished games" v-model="showClosedGames" dark></v-switch>
         </v-toolbar>
-      </div >
+      </div > -->
       <v-expansion-panel expand>
         <v-expansion-panel-content v-if="withinWeekRange(week)" v-for="(week, i) in 16" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } ">
           <div slot="header">Week {{week}}</div>
@@ -86,7 +86,7 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
-        showClosedGames: false,
+        showClosedGames: true,
         currentGameWeek: moment().week() - 36,
         clipped: false,
         fixed: false,
@@ -101,10 +101,11 @@
     },
     methods: {
       withinWeekRange: function (week) {
-        const lowestWeek = this.showClosedGames ? 1 : this.currentGameWeek - 1
-        const highestWeek = this.currentGameWeek + 5
-
-        return week >= lowestWeek && week <= highestWeek
+        return true
+        // const lowestWeek = this.showClosedGames ? 1 : this.currentGameWeek - 1
+        // const highestWeek = this.currentGameWeek + 5
+        // console.log('week', week, lowestWeek, highestWeek)
+        // return week >= lowestWeek && week <= highestWeek
       },
       oldAndClosed: function (game) {
         return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
@@ -122,12 +123,8 @@
     async mounted () {
       console.log('lolS')
       this.signedIn = !!localStorage.getItem('username')
-      console.log(this.games)
       this.games = await utils.getGames(localStorage.getItem('googleToken'))
-      // .then(games => ({
-      //   games
-      // }))
-      console.log(this.games.games)
+      console.log('ze', this.games)
     }
   }
 </script>
@@ -171,7 +168,6 @@
     padding-right: 0px !important;
   }
   .filterscontainer {
-    display: flex;
     justify-content: center;
     align-items: center;
   }
@@ -180,5 +176,8 @@
   }
   .expansion-panel {
     margin-top: 15px;
+  }
+  main {
+    flex-direction : column;
   }
 </style>

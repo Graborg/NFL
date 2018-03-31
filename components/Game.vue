@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid text-xs-center>
+<v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="awayBtnClass">

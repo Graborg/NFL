@@ -28,7 +28,7 @@ export default {
       let username = googleUser.getBasicProfile().getEmail()
       localStorage.setItem('googleToken', token)
       localStorage.setItem('username', username)
-      axios.put(`http://localhost:3333/api/users/${username}/auth`, {
+      axios.put(`http://localhost:3333/users/${username}/auth`, {
         token
       })
       this.$emit('loggedIn')
