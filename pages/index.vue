@@ -34,28 +34,30 @@
           <td class="text-xs-left">{{ props.item.successRate }}</td>
         </template>
       </v-data-table>
-      <!-- <div class="filterscontainer">
+      <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
           <v-switch left label="Show old and finished games" v-model="showClosedGames" dark></v-switch>
         </v-toolbar>
-      </div > -->
-      <v-expansion-panel expand>
-        <v-expansion-panel-content v-if="withinWeekRange(week)" v-for="(week, i) in 16" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } ">
-          <div slot="header">Week {{week}}</div>
-          <v-list>
-            <v-list-tile
-              value="true"
-              v-for="(game, is) in games"
-              :ripple="false"
-              :key="is"
-            >
-            <v-list-tile-content v-if="game.week === week && !oldAndClosed(game) || showClosedGames">
+      </div >
+      <v-list>
+        <v-list-tile
+          value="true"
+          v-for="(game, is) in games"
+          :ripple="false"
+          :key="is"
+        >
+        <v-expansion-panel expand>
+          <!-- <v-expansion-panel-content v-if="withinWeekRange(game)" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } "> -->
+          <v-expansion-panel-content v-if="withinWeekRange(game.week)">
+            <div slot="header">Weekz {{game.week}}</div>
+            <v-list-tile-content>
+            <!-- <v-list-tile-content v-if="game.week === week && !oldAndClosed(game) || showClosedGames"> -->
               <Game :game="game"></Game>
             </v-list-tile-content>
-            </v-list-tile>
-          </v-list>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        </v-list-tile>
+      </v-list>
     </main>
     <!-- <log></log> -->
   </v-app>
@@ -87,7 +89,7 @@
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
         showClosedGames: true,
-        currentGameWeek: moment().week() - 36,
+        // currentGameWeek: moment().week() - 36,
         clipped: false,
         fixed: false,
         right: true,
@@ -100,12 +102,12 @@
       }
     },
     methods: {
-      withinWeekRange: function (week) {
-        return true
-        // const lowestWeek = this.showClosedGames ? 1 : this.currentGameWeek - 1
-        // const highestWeek = this.currentGameWeek + 5
-        // console.log('week', week, lowestWeek, highestWeek)
-        // return week >= lowestWeek && week <= highestWeek
+      withinWeekRange: function (playWeek) {
+        const lowestWeek = this.showClosedGames ? 0 : moment().week() - 1
+        const highestWeek = moment().week() + 5
+        console.log(playWeek, lowestWeek, highestWeek)
+
+        return playWeek >= lowestWeek && playWeek <= highestWeek
       },
       oldAndClosed: function (game) {
         return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
