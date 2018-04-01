@@ -36,7 +36,7 @@
       </v-data-table>
       <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
-          <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
+          <v-switch left label="Show all weeks" v-model="showAllGames" dark :class="showAllGamesToggle"></v-switch>
         </v-toolbar>
       </div>
       <v-expansion-panel>      
@@ -186,5 +186,8 @@
   }
   main {
     flex-direction : column;
+  }
+  .switch {
+    margin-top: 25px;
   }
 </style>
