@@ -211,7 +211,5 @@ btn.submit {
   width: 80%;
   margin-right: 5px;
 }
-.body-1 {
-}
 
 </style>

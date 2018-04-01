@@ -10,8 +10,8 @@ function insertGames (games) {
     .catch(console.log)
 }
 
-function getGames () {
-  return r.db('nfl').table('games')
+function getGamesByWeek () {
+  return r.db('nfl').table('games').group('week')
 }
 
 function getUserBets (userId) {
@@ -65,7 +65,7 @@ module.exports = {
   insertGames,
   getUserBets,
   updateBet,
-  getGames,
+  getGamesByWeek,
   setCollectedDate,
   getCollectedDate,
   addAuthTokenToUser,

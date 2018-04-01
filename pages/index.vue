@@ -36,26 +36,34 @@
       </v-data-table>
       <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
-          <v-switch left label="Show old and finished games" v-model="showClosedGames" dark></v-switch>
+          <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
         </v-toolbar>
       </div >
       <v-list>
         <v-list-tile
           value="true"
-          v-for="(game, is) in games"
+          v-for="(gameWeek, gameWeekNo) in gameWeeks"
           :ripple="false"
-          :key="is"
+          :key="gameWeekNo"
         >
-        <v-expansion-panel expand>
-          <!-- <v-expansion-panel-content v-if="withinWeekRange(game)" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } "> -->
-          <v-expansion-panel-content v-if="withinWeekRange(game.week)">
-            <div slot="header">Weekz {{game.week}}</div>
-            <v-list-tile-content>
-            <!-- <v-list-tile-content v-if="game.week === week && !oldAndClosed(game) || showClosedGames"> -->
-              <Game :game="game"></Game>
-            </v-list-tile-content>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+        <v-list-tile-content>
+          <v-expansion-panel expand>
+            <v-expansion-panel-content v-if="showWeek(gameWeekNo, gameWeek)" v-bind:value="gameWeekNo === '36'" v-bind:class="{ teal: gameWeekNo === '36' }">
+              <div slot="header">Week {{gameWeekNo}}</div>
+              <v-list>
+                <v-list-tile
+                  value="true"
+                  v-for="(game, is) in gameWeek"
+                  :key="is"
+                >
+                <v-list-tile-content>
+                  <Game :game="game"></Game>
+                </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-list-tile-content>
         </v-list-tile>
       </v-list>
     </main>
@@ -88,30 +96,29 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
-        showClosedGames: true,
-        // currentGameWeek: moment().week() - 36,
+        showAllGames: true,
         clipped: false,
         fixed: false,
         right: true,
         signedIn: false,
         rightDrawer: false,
         datenow: '',
-        games: [],
+        gameWeeks: [],
         title: 'National Flaps League',
         log: ['nothing', 'here']
       }
     },
     methods: {
-      withinWeekRange: function (playWeek) {
-        const lowestWeek = this.showClosedGames ? 0 : moment().week() - 1
-        const highestWeek = moment().week() + 5
-        console.log(playWeek, lowestWeek, highestWeek)
-
-        return playWeek >= lowestWeek && playWeek <= highestWeek
-      },
-      oldAndClosed: function (game) {
-        return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
+      // Show week if within interval, or toggled showAllGames
+      showWeek: function (playWeekNo, playWeek) {
+        const lowestWeek = moment().week() - 1
+        const highestWeek = moment().week() + 24
+        console.log(playWeek >= lowestWeek && playWeek <= highestWeek)
+        return (playWeek >= lowestWeek && playWeek <= highestWeek) || this.showAllGames
       }
+      // oldAndClosed: function (game) {
+      //   return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
+      // }
     },
     components: {Game, Auth},
     async asyncData () {
@@ -123,10 +130,8 @@
       }
     },
     async mounted () {
-      console.log('lolS')
       this.signedIn = !!localStorage.getItem('username')
-      this.games = await utils.getGames(localStorage.getItem('googleToken'))
-      console.log('ze', this.games)
+      this.gameWeeks = await utils.getGames(localStorage.getItem('googleToken'))
     }
   }
 </script>

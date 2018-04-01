@@ -5,14 +5,11 @@ function updateCollectedTimestamp () {
   // const today = moment().format('YYYY-MM-DD')
   // return dbAdapter.setCollectedDate(today)
 }
-function groupByWeek (games) {
 
-}
 async function getGames (token) {
   let games
   games = await axios.get(`http://${config.serverUrl}/games`)
     .then(res => res.data.games)
-    .then(games => groupByWeek(games))
     // const username = await dbAdapter.getUserFromAuth(token)
     // const userBets = await dbAdapter.getUserBets(username)
   return games
