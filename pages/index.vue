@@ -38,34 +38,30 @@
         <v-toolbar xs-12 class="filters" :dark="true">
           <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
         </v-toolbar>
-      </div >
-      <v-list>
-        <v-list-tile
-          value="true"
+      </div>
+      <v-expansion-panel>      
+        <v-expansion-panel-content 
           v-for="(gameWeek, gameWeekNo) in gameWeeks"
-          :ripple="false"
-          :key="gameWeekNo"
+          :key="gameWeekNo" 
+          :lazy="true" 
+          v-if="showWeek(gameWeekNo, gameWeek)" 
+          :value="gameWeekNo === '36' && isMounted" 
+          v-bind:class="{ teal: gameWeekNo === '36' }" 
         >
-        <v-list-tile-content>
-          <v-expansion-panel>
-            <v-expansion-panel-content :lazy="true" v-if="showWeek(gameWeekNo, gameWeek)" :value="gameWeekNo === '36' && isMounted" v-bind:class="{ teal: gameWeekNo === '36' }">
-              <div slot="header">Week {{gameWeekNo}}</div>
-              <v-list>
-                <v-list-tile
-                  value="true"
-                  v-for="(game, is) in gameWeek"
-                  :key="is"
-                >
-                <v-list-tile-content>
-                  <Game :game="game"></Game>
-                </v-list-tile-content>
-                </v-list-tile>
-              </v-list>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-list-tile-content>
-        </v-list-tile>
-      </v-list>
+          <div slot="header">Week {{gameWeekNo}}</div>
+          <v-list>
+            <v-list-tile
+              value="true"
+              v-for="(game, is) in gameWeek"
+              :key="is"
+            >
+              <v-list-tile-content>
+                <Game :game="game"></Game>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
     </main>
     <!-- <log></log> -->
   </v-app>
