@@ -47,8 +47,8 @@
           :key="gameWeekNo"
         >
         <v-list-tile-content>
-          <v-expansion-panel expand>
-            <v-expansion-panel-content v-if="showWeek(gameWeekNo, gameWeek)" v-bind:value="gameWeekNo === '36'" v-bind:class="{ teal: gameWeekNo === '36' }">
+          <v-expansion-panel>
+            <v-expansion-panel-content :lazy="true" v-if="showWeek(gameWeekNo, gameWeek)" :value="gameWeekNo === '36' && isMounted" v-bind:class="{ teal: gameWeekNo === '36' }">
               <div slot="header">Week {{gameWeekNo}}</div>
               <v-list>
                 <v-list-tile
@@ -105,7 +105,8 @@
         datenow: '',
         gameWeeks: [],
         title: 'National Flaps League',
-        log: ['nothing', 'here']
+        log: ['nothing', 'here'],
+        isMounted: false
       }
     },
     methods: {
@@ -132,6 +133,9 @@
     async mounted () {
       this.signedIn = !!localStorage.getItem('username')
       this.gameWeeks = await utils.getGames(localStorage.getItem('googleToken'))
+      setTimeout(() => {
+        this.isMounted = true
+      }, 1000)
     }
   }
 </script>
