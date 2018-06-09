@@ -14,8 +14,8 @@ function getGamesByWeek () {
   return r.db('nfl').table('games').group('week')
 }
 
-function getUserBets (userId) {
-  return r.db('nfl').table('users')
+function getUserBets (username) {
+  return r.db('nfl').table('users').filter({ username })
 }
 
 function setCollectedDate (date) {

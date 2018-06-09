@@ -5,12 +5,12 @@
 
   <v-app light v-if="signedIn">
     <v-toolbar fixed>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title v-text="`Welcome to ${title} ${username}`"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
         icon
         light
-        @click.stop="rightDrawer = !rightDrawer"
+        @click="logout"
       >
         <v-icon>menu</v-icon>
       </v-btn>
@@ -36,7 +36,7 @@
       </v-data-table>
       <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
-          <v-switch left label="Show all weeks" v-model="showAllGames" dark :class="showAllGamesToggle"></v-switch>
+          <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
         </v-toolbar>
       </div>
       <v-expansion-panel>      
@@ -77,6 +77,7 @@
   import Auth from '../components/Auth'
   const utils = require('../utils')
   const moment = require('moment')
+
   export default {
     data: function () {
       return {
@@ -102,25 +103,27 @@
         gameWeeks: [],
         title: 'National Flaps League',
         log: ['nothing', 'here'],
-        isMounted: false
+        isMounted: false,
+        username: ''
       }
     },
     methods: {
+      logout () {
+        this.signedIn = false
+        localStorage.removeItem('token')
+      },
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
         const lowestWeek = moment().week() - 1
         const highestWeek = moment().week() + 24
-        console.log(playWeek >= lowestWeek && playWeek <= highestWeek)
+  
         return (playWeek >= lowestWeek && playWeek <= highestWeek) || this.showAllGames
       }
-      // oldAndClosed: function (game) {
-      //   return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
-      // }
     },
     components: {Game, Auth},
     async asyncData () {
       if (typeof (Storage) !== 'undefined') {
-        return utils.getGames(localStorage.getItem('googleToken'))
+        return utils.getGames(localStorage.getItem('token'))
           .then(games => ({
             games
           }))
@@ -128,7 +131,7 @@
     },
     async mounted () {
       this.signedIn = !!localStorage.getItem('username')
-      this.gameWeeks = await utils.getGames(localStorage.getItem('googleToken'))
+      this.gameWeeks = await utils.getGames(localStorage.getItem('token'))
       setTimeout(() => {
         this.isMounted = true
       }, 1000)

@@ -2,20 +2,19 @@
 <v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="awayBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
           <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
       <v-flex text-xs2-center md1>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="tieBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="tieBtnClass">
           <div class="body-1 btn-text">-</div>
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="homeBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
           <div class="body-1 btn-text">{{game.awayTeam}}</div>
-        </v-btn>
-      </v-card>
+        </v-card>
       </v-flex>
       <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
@@ -132,11 +131,10 @@ export default {
     submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        const username = localStorage.getItem('username')
         axios({
-          method: 'put',
-          url: `http://localhost:3333/api/users/${username}/bets`,
-          headers: {Authorization: localStorage.getItem('googleToken')},
+          method: 'post',
+          url: `http://localhost:3333/bets`,
+          headers: {Authorization: localStorage.getItem('token')},
           data: {
             gameId: this.game.id,
             teamName: this.selectedTeam,
@@ -151,6 +149,7 @@ export default {
       this.awayBtnClass = 'btn--disabled'
       this.tieBtnClass = 'btn--disabled'
       this.homeBtnClass = 'btn--disabled'
+      console.log(this.game.outcome)
 
       if (this.game.outcome === 'home') {
         this.homeBtnClass = 'green white--text'

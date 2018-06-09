@@ -4,31 +4,31 @@ const axios = require('axios')
 const moment = require('moment')
 const bodyParser = require('body-parser')
 const config = require('../config')
-
 const app = express()
+
 app.use(bodyParser.json())
 
-app.put('/users/:username/bets', async (req, res) => {
-  let { body: { gameId, teamName, outcome } } = req
-  const username = await dbAdapter.getUserFromAuth(req.header('Authorization'))
+app.post('/bets', validateToken, async (req, res) => {
+  let { body: { gameId, teamName, outcome }, username } = req
   return dbAdapter.updateBet(username, gameId, teamName, outcome)
     .then(console.log)
     .catch(console.log)
     .then(() => res.sendStatus(200))
 })
 
-app.get(`/users/:username/bets`, (req, res) => {
-  return dbAdapter.getUserBets(req.params.username)
+app.get(`/bets`, validateToken, (req, res) => {
+  return dbAdapter.getUserBets(req.username)
     .then(bets => {
       res.json({
-        it: bets
+        data: bets
       })
     })
 })
 
 app.get(`/games`, async (req, res) => {
   if (await dataCollectedToday()) {
-    return dbAdapter.getGames()
+    return dbAdapter.getGamesByWeek()
+      .then(games => games.reduce(formatGamesFromUrl, {}))
       .then(games => {
         res.json({
           games
@@ -91,19 +91,20 @@ function formatGamesFromUrl (formattedGames, gameGroup, weekNo) {
     outcome: getOutcome(game)
   }))
   return formattedGames
-//   return allformattedGames.concat(formattedGames)
 }
 
-app.put(`/users/:username/auth`, (req, res) => {
-  let { params: { username }, body: { token } } = req
-  console.log('updating token')
-  return dbAdapter.addAuthTokenToUser(username, token)
-    .then(user => {
-      console.log('usea', user)
-      res.json({
-        id: user.id
-      })
-    })
-})
+async function validateToken (req, res, next) {
+  const token = req.headers.authorization
+  let emailFromToken
+  delete req.username
+  try {
+    const result = await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`)
+    emailFromToken = result.data.email
+  } catch (e) {
+    throw new Error(`Couldnt verify token ${e}`)
+  }
+  req.username = emailFromToken
+  next()
+}
 
 module.exports = app

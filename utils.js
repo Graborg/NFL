@@ -1,3 +1,4 @@
+
 const axios = require('axios')
 const config = require('./config')
 
@@ -12,6 +13,8 @@ async function getGames (token) {
     .then(res => res.data.games)
     // const username = await dbAdapter.getUserFromAuth(token)
     // const userBets = await dbAdapter.getUserBets(username)
+  console.log('sss', JSON.stringify(games))
+
   return games
   // return games.map(game => {
   //   Object.assign({}, game,
