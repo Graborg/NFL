@@ -1,3 +1,5 @@
+const axios = require('axios')
+
 async function validateToken (req, res, next) {
   const token = req.headers.authorization
   let emailFromToken
@@ -12,4 +14,4 @@ async function validateToken (req, res, next) {
   next()
 }
 
-module.exports = validateToken
+module.exports = { validateToken }
