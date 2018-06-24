@@ -8,7 +8,7 @@ async function validateToken (req, res, next) {
     const result = await axios.get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${token}`)
     emailFromToken = result.data.email
   } catch (e) {
-    throw new Error(`Couldnt verify token ${e}`)
+    throw new Error(`Couldnt verify token ${token}, ${e}`)
   }
   req.username = emailFromToken
   next()

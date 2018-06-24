@@ -19,7 +19,7 @@ app.post('/bets', validateToken, async (req, res) => {
     .then(() => res.sendStatus(200))
 })
 
-app.get(`/bets`, validateToken, (req, res) => {
+app.get(`/bets`, (req, res) => {
   return dbAdapter.getUserBets(req.username)
     .then(bets => {
       res.json({
@@ -31,7 +31,7 @@ app.get(`/bets`, validateToken, (req, res) => {
 app.get(`/games`, async (req, res) => {
   if (await dataCollectedToday()) {
     console.log('lolg')
-    
+
     return dbAdapter.getGamesByWeek()
       .then(games => games.reduce(formatGamesFromUrl, {}))
       .then(games => {
