@@ -11,8 +11,6 @@ app.use(bodyParser.json())
 app.post('/bets', validateToken, async (req, res) => {
   let { body: { gameId, teamName, outcome }, username } = req
   return dbAdapter.updateBet(username, gameId, teamName, outcome)
-    .then(console.log)
-    .catch(console.log)
     .then(() => res.sendStatus(200))
 })
 

@@ -97,7 +97,8 @@ export default {
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
         this.selectedTeam = event.currentTarget.innerText
-        if (this.selectedTeam === '---') { // Tie
+
+        if (this.selectedTeam === '-') { // Tie
           this.selectedOutcome = 'tie'
         } else {
           this.selectedOutcome = this.selectedTeam === this.game.awayTeam ? 'away' : 'home'
@@ -149,7 +150,6 @@ export default {
       this.awayBtnClass = 'btn--disabled'
       this.tieBtnClass = 'btn--disabled'
       this.homeBtnClass = 'btn--disabled'
-      console.log(this.game.outcome)
 
       if (this.game.outcome === 'home') {
         this.homeBtnClass = 'green white--text'
