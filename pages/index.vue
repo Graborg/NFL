@@ -115,9 +115,9 @@
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
         const lowestWeek = moment().week() - 1
-        const highestWeek = moment().week() + 24
+        const highestWeek = moment().week() + 15 // 24
   
-        return (playWeek >= lowestWeek && playWeek <= highestWeek) || this.showAllGames
+        return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
       }
     },
     components: {Game, Auth},
