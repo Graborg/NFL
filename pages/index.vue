@@ -93,7 +93,7 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
-        showAllGames: true,
+        showAllGames: false,
         clipped: false,
         fixed: false,
         right: true,
