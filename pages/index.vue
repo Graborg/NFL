@@ -121,17 +121,12 @@
       }
     },
     components: {Game, Auth},
-    async asyncData () {
-      if (typeof (Storage) !== 'undefined') {
-        return utils.getGames(localStorage.getItem('token'))
-          .then(games => ({
-            games
-          }))
-      }
-    },
     async mounted () {
-      this.signedIn = !!localStorage.getItem('username')
-      this.gameWeeks = await utils.getGames(localStorage.getItem('token'))
+      const username = localStorage.getItem('username')
+      this.signedIn = !!username
+      if (this.signedIn) {
+        this.gameWeeks = await utils.getGamesAndBets(username)
+      }
       setTimeout(() => {
         this.isMounted = true
       }, 1000)

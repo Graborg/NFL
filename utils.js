@@ -1,22 +1,24 @@
 const axios = require('axios')
 const config = require('./config')
 
-async function getGamesAndBets (token) {
+async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
     axios.get(`http://${config.serverUrl}/games`).then(res => res.data.games),
     axios.get(`http://${config.serverUrl}/bets`).then(res => res.data.bets)
   ])
-  const res = injectBetsIngames(gameWeeks, bets)
+  const res = injectBetsIngames(gameWeeks, bets, username)
   return res
 }
-function injectBetsIngames (gameWeeks, bets) {
+function injectBetsIngames (gameWeeks, bets, username) {
   let mergeObj = Object.assign({}, gameWeeks)
   for (const bet of bets) {
     const gamesInWeek = mergeObj[bet.playWeek]
     const gameWeekForBet = gamesInWeek.find(game => bet.gameId === game.id)
+
     const betInfo = {
-      username: bet.username,
-      outcome: bet.outcome
+      username,
+      outcome: bet.outcome,
+      isCurrentUsersBet: bet.username === username
     }
     gameWeekForBet.bets ? gameWeekForBet.bets.push(betInfo) : gameWeekForBet.bets = [betInfo]
   }
