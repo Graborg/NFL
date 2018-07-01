@@ -1,15 +1,16 @@
 
 <template>
+
   <div id="__nuxt">
 
-  <v-app light>
+  <v-app light v-if="signedIn">
     <v-toolbar fixed>
-      <v-toolbar-title v-text="title"></v-toolbar-title>
+      <v-toolbar-title v-text="`Welcome to ${title} ${username}`"></v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
         icon
         light
-        @click.stop="rightDrawer = !rightDrawer"
+        @click="logout"
       >
         <v-icon>menu</v-icon>
       </v-btn>
@@ -35,22 +36,28 @@
       </v-data-table>
       <div class="filterscontainer">
         <v-toolbar xs-12 class="filters" :dark="true">
-          <v-switch left label="Show old and finished games" v-model="showClosedGames" dark></v-switch>
+          <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
         </v-toolbar>
-      </div >
-      <v-expansion-panel expand>
-        <v-expansion-panel-content v-if="withinWeekRange(week)" v-for="(week, i) in 16" :key="i" v-bind:value="week === currentGameWeek" v-bind:class="{ teal: week === currentGameWeek } ">
-          <div slot="header">Week {{week}}</div>
+      </div>
+      <v-expansion-panel>      
+        <v-expansion-panel-content 
+          v-for="(gameWeek, gameWeekNo) in gameWeeks"
+          :key="gameWeekNo" 
+          :lazy="true" 
+          v-if="showWeek(gameWeekNo, gameWeek)" 
+          :value="gameWeekNo === '36' && isMounted" 
+          v-bind:class="{ teal: gameWeekNo === '36' }" 
+        >
+          <div slot="header">Week {{gameWeekNo}}</div>
           <v-list>
             <v-list-tile
               value="true"
-              v-for="(game, is) in games"
-              :ripple="false"
+              v-for="(game, is) in gameWeek"
               :key="is"
             >
-            <v-list-tile-content v-if="game.week === week && !oldAndClosed(game) || showClosedGames">
-              <Game :game="game"></Game>
-            </v-list-tile-content>
+              <v-list-tile-content>
+                <Game :game="game"></Game>
+              </v-list-tile-content>
             </v-list-tile>
           </v-list>
         </v-expansion-panel-content>
@@ -58,14 +65,19 @@
     </main>
     <!-- <log></log> -->
   </v-app>
+
+  <Auth v-else v-on:loggedIn="signedIn = true">
+  </Auth>
 </div>
 
 </template>
 
 <script>
   import Game from '../components/Game'
+  import Auth from '../components/Auth'
   const utils = require('../utils')
   const moment = require('moment')
+
   export default {
     data: function () {
       return {
@@ -81,36 +93,48 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
-        showClosedGames: false,
-        currentGameWeek: moment().week() - 36,
+        showAllGames: true,
         clipped: false,
         fixed: false,
         right: true,
+        signedIn: false,
         rightDrawer: false,
         datenow: '',
-        games: [],
+        gameWeeks: [],
         title: 'National Flaps League',
-        log: ['nothing', 'here']
+        log: ['nothing', 'here'],
+        isMounted: false,
+        username: ''
       }
     },
     methods: {
-      withinWeekRange: function (week) {
-        const lowestWeek = this.showClosedGames ? 1 : this.currentGameWeek - 1
-        const highestWeek = this.currentGameWeek + 5
-
-        return week >= lowestWeek && week <= highestWeek
+      logout () {
+        this.signedIn = false
+        localStorage.removeItem('token')
       },
-      oldAndClosed: function (game) {
-        return game.status === 'closed' && moment(game.deadlineDate).add(1, 'week').isBefore()
+      // Show week if within interval, or toggled showAllGames
+      showWeek: function (playWeekNo, playWeek) {
+        const lowestWeek = moment().week() - 1
+        const highestWeek = moment().week() + 24
+  
+        return (playWeek >= lowestWeek && playWeek <= highestWeek) || this.showAllGames
       }
     },
-    components: {Game},
+    components: {Game, Auth},
     async asyncData () {
-      console.log(utils.default)
-      return utils.default.updateGamesDb()
-        .then(games => ({
-          games
-        }))
+      if (typeof (Storage) !== 'undefined') {
+        return utils.getGames(localStorage.getItem('token'))
+          .then(games => ({
+            games
+          }))
+      }
+    },
+    async mounted () {
+      this.signedIn = !!localStorage.getItem('username')
+      this.gameWeeks = await utils.getGames(localStorage.getItem('token'))
+      setTimeout(() => {
+        this.isMounted = true
+      }, 1000)
     }
   }
 </script>
@@ -154,7 +178,6 @@
     padding-right: 0px !important;
   }
   .filterscontainer {
-    display: flex;
     justify-content: center;
     align-items: center;
   }
@@ -163,5 +186,11 @@
   }
   .expansion-panel {
     margin-top: 15px;
+  }
+  main {
+    flex-direction : column;
+  }
+  .switch {
+    margin-top: 25px;
   }
 </style>

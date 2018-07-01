@@ -1,22 +1,22 @@
-const r = require('rethinkdbdash')({
+import * as dbdash from 'rethinkdbdash'
+const r = dbdash({
   servers: [{ host: 'rethinkdb', port: 28015 }]
 })
-
-function insertGames (games) {
+export function insertGames (games) {
   return r.db('nfl').table('games').insert(games, {conflict: 'update'})
     .then(() => games)
     .catch(console.log)
 }
 
-function getGames () {
+export function getGamesFromDb () {
   return r.db('nfl').table('games')
 }
 
-function getUserBets (userId) {
+export function getUserBets (userId) {
   return r.db('nfl').table('users')
 }
 
-function setCollectedDate (date) {
+export function setCollectedDate (date) {
   return r.db('nfl').table('timestamps')
     .get('gamesDataCollected')
     .replace({
@@ -25,19 +25,22 @@ function setCollectedDate (date) {
     })
 }
 
-function getCollectedDate () {
-  return r.db('nfl').table('timestamps')
-    .get('gamesDataCollected')
-    .then(res => {
-      if (!res) return
-
-      return res.date
-    })
+export async function getCollectedDate () {
+  console.log('problem')
+  let ho = await r.db('nfl').table('timestamps').run()
+  console.log('hohoho')
+  console.log(ho)
+  // .get('gamesDataCollected')
+  // .then(res => {
+  //   if (!res) return
+  //
+  //   return res.date
+  // })
 }
-function updateBet (username, gameId, teamName, outcome) {
+export function updateBet (username, gameId, teamName, outcome) {
   return r.db('nfl')
     .table('users')
-    .filter({username})
+    .filter({ username })
     .update(row => ({
       bets: row('bets').filter(bet => bet('gameId').ne(gameId))
         .append({
@@ -48,12 +51,13 @@ function updateBet (username, gameId, teamName, outcome) {
         })
     }))
 }
+export function addAuthTokenToUser (username, token) {
+  return r.db('nfl')
+    .table('users')
+    .filter({ username })
+    .update({ token })
+}
 
-module.exports = {
-  insertGames,
-  getUserBets,
-  updateBet,
-  getGames,
-  setCollectedDate,
-  getCollectedDate
+export function getUserFromAuth () {
+  return Promise.resolve('intemicke@gmail.com')
 }

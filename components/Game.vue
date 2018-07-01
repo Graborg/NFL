@@ -1,21 +1,20 @@
 <template>
-  <v-container fluid text-xs-center>
+<v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="awayBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
           <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
       <v-flex text-xs2-center md1>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="tieBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="tieBtnClass">
           <div class="body-1 btn-text">-</div>
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" v-on:click="toggleTeamChoice" :class="homeBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
           <div class="body-1 btn-text">{{game.awayTeam}}</div>
-        </v-btn>
-      </v-card>
+        </v-card>
       </v-flex>
       <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
@@ -98,7 +97,8 @@ export default {
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
         this.selectedTeam = event.currentTarget.innerText
-        if (this.selectedTeam === '---') { // Tie
+
+        if (this.selectedTeam === '-') { // Tie
           this.selectedOutcome = 'tie'
         } else {
           this.selectedOutcome = this.selectedTeam === this.game.awayTeam ? 'away' : 'home'
@@ -132,10 +132,15 @@ export default {
     submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        axios.put('http://localhost:3333/api/users/pudding/bets', {
-          gameId: this.game.id,
-          teamName: this.selectedTeam,
-          outcome: this.selectedOutcome // Home/away/tie
+        axios({
+          method: 'post',
+          url: `http://localhost:3333/bets`,
+          headers: {Authorization: localStorage.getItem('token')},
+          data: {
+            gameId: this.game.id,
+            teamName: this.selectedTeam,
+            outcome: this.selectedOutcome // Home/away/tie
+          }
         })
       }
     }
@@ -204,8 +209,6 @@ a {
 btn.submit {
   width: 80%;
   margin-right: 5px;
-}
-.body-1 {
 }
 
 </style>
