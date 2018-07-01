@@ -15,7 +15,10 @@ app.use(bodyParser.json())
 
 app.post('/bets', validateToken, async (req, res) => {
   let { body: { gameId, teamName, outcome }, username } = req
-  return dbAdapter.updateBet(username, gameId, teamName, outcome)
+  const { week } = await dbAdapter.getGame(gameId)
+  // TODO: Check if past deadline
+
+  return dbAdapter.updateBet(username, gameId, teamName, outcome, week)
     .then(() => res.sendStatus(200))
 })
 
@@ -23,15 +26,13 @@ app.get(`/bets`, (req, res) => {
   return dbAdapter.getUserBets(req.username)
     .then(bets => {
       res.json({
-        data: bets
+        bets
       })
     })
 })
 
 app.get(`/games`, async (req, res) => {
   if (await dataCollectedToday()) {
-    console.log('lolg')
-
     return dbAdapter.getGamesByWeek()
       .then(games => games.reduce(formatGamesFromUrl, {}))
       .then(games => {
