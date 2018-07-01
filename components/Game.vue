@@ -2,7 +2,7 @@
 <v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
           <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
@@ -12,14 +12,14 @@
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
           <div class="body-1 btn-text">{{game.awayTeam}}</div>
         </v-card>
       </v-flex>
       <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
           <div class="body-1"> {{submitBtnText}} </div>
-          <v-progress-circular v-if="submitted && outcomeSelected" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
+          <v-progress-circular v-if="submitted && outcomeSelected && !locked" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
         </v-btn>
       </v-flex>
     </v-layout>
@@ -50,9 +50,7 @@ export default {
       deadlineDate: '',
       submitBtnText: 'LOADING...',
       submitted: false,
-      locked: false,
-      activeBtn: 'indigo lighten-1 white--text',
-      passiveBtn: 'indigo white--text',
+      locked: this.isPastDeadline() || this.game.status === 'inprogress' || this.game.status === 'closed',
       homeBtnClass: 'indigo white--text',
       tieBtnClass: 'indigo white--text',
       awayBtnClass: 'indigo white--text',
@@ -61,10 +59,14 @@ export default {
     }
   },
   methods: {
-    updateSubmitBtn () {
+    isPastDeadline () {
+      const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+
+      return timeToDeadline < 0
+    },
+    updateSubmitBtnText () {
       let self = this
 
-      let timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
       const gameStatus = this.game.status
 
       switch (gameStatus) {
@@ -77,22 +79,23 @@ export default {
         case 'postponed':
           this.submitBtnText = `Choose outcome (postponed)`
           break
-        default: // Still open
-          if (this.submitted) {
-            this.submitBtnText = `Waiting for game to start`
-          } else if (timeToDeadline < 0) {
-            this.lock = true
+        default: // Game hasnt begun
+          const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+
+          if (this.isPastDeadline()) {
             this.submitBtnText = `There's no goin' back now`
+          } else if (this.submitted) {
+            this.submitBtnText = `Waiting for game to start`
           } else if (this.outcomeSelected) {
             this.submitBtnText = `Submit (${timeToDeadline})`
           } else {
             this.submitBtnText = `Choose outcome (${timeToDeadline})`
           }
       }
-      requestAnimationFrame(self.updateSubmitBtn)
+      requestAnimationFrame(self.updateSubmitBtnText)
     },
     toggleTeamChoice (event) {
-      if (!this.locked && !this.submitted && this.game.status !== 'closed') {
+      if (!this.locked && !this.submitted) {
         this.outcomeSelected = !this.outcomeSelected
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
@@ -118,14 +121,41 @@ export default {
         }
       }
     },
+    updateGameFromDB () {
+      const myBet = this.game.bets.find(bet => bet.isCurrentUsersBet)
+
+      if (myBet) {
+        this.submitted = true
+        this.outcomeSelected = true
+        const chosenBtnClass = 'card teal white--text'
+        const notChosenBtnClass = 'card btn--disabled'
+
+        this.awayBtnClass = myBet.outcome === 'away' ? chosenBtnClass : notChosenBtnClass
+        this.tieBtnClass = myBet.outcome === 'tie' ? chosenBtnClass : notChosenBtnClass
+        this.homeBtnClass = myBet.outcome === 'home' ? chosenBtnClass : notChosenBtnClass
+      }
+    },
+    setGameToClosed () {
+      this.awayBtnClass = 'btn--disabled'
+      this.tieBtnClass = 'btn--disabled'
+      this.homeBtnClass = 'btn--disabled'
+
+      if (this.game.outcome === 'home') {
+        this.homeBtnClass = 'green white--text'
+      } else if (this.game.outcome === 'away') {
+        this.awayBtnClass = 'green white--text'
+      } else {
+        this.tieBtnClass = 'green white--text'
+      }
+    },
     mouseLeave (event) {
       event.preventDefault()
-      if (this.game.status !== 'closed') {
+      if (this.locked) {
         event.currentTarget.classList.remove('lighten-1')
       }
     },
     mouseOver (event) {
-      if (this.game.status !== 'closed' && !this.submitted) {
+      if (this.locked && !this.submitted) {
         event.currentTarget.classList.add('lighten-1')
       }
     },
@@ -146,20 +176,13 @@ export default {
     }
   },
   mounted: function () {
-    if (this.game.status === 'closed') {
-      this.awayBtnClass = 'btn--disabled'
-      this.tieBtnClass = 'btn--disabled'
-      this.homeBtnClass = 'btn--disabled'
-
-      if (this.game.outcome === 'home') {
-        this.homeBtnClass = 'green white--text'
-      } else if (this.game.outcome === 'away') {
-        this.awayBtnClass = 'green white--text'
-      } else {
-        this.tieBtnClass = 'green white--text'
-      }
+    if (this.game.bets) {
+      this.updateGameFromDB()
     }
-    this.updateSubmitBtn()
+    if (this.game.status === 'closed') {
+      this.setGameToClosed()
+    }
+    this.updateSubmitBtnText()
   }
 }
 </script>

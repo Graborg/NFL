@@ -93,7 +93,7 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
-        showAllGames: true,
+        showAllGames: false,
         clipped: false,
         fixed: false,
         right: true,
@@ -115,23 +115,18 @@
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
         const lowestWeek = moment().week() - 1
-        const highestWeek = moment().week() + 24
+        const highestWeek = moment().week() + 15 // 24
   
-        return (playWeek >= lowestWeek && playWeek <= highestWeek) || this.showAllGames
+        return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
       }
     },
     components: {Game, Auth},
-    async asyncData () {
-      if (typeof (Storage) !== 'undefined') {
-        return utils.getGames(localStorage.getItem('token'))
-          .then(games => ({
-            games
-          }))
-      }
-    },
     async mounted () {
-      this.signedIn = !!localStorage.getItem('username')
-      this.gameWeeks = await utils.getGames(localStorage.getItem('token'))
+      const username = localStorage.getItem('username')
+      this.signedIn = !!username
+      if (this.signedIn) {
+        this.gameWeeks = await utils.getGamesAndBets(username)
+      }
       setTimeout(() => {
         this.isMounted = true
       }, 1000)

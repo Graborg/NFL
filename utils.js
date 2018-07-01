@@ -1,29 +1,29 @@
-
 const axios = require('axios')
 const config = require('./config')
 
-function updateCollectedTimestamp () {
-  // const today = moment().format('YYYY-MM-DD')
-  // return dbAdapter.setCollectedDate(today)
+async function getGamesAndBets (username) {
+  const [gameWeeks, bets] = await Promise.all([
+    axios.get(`http://${config.serverUrl}/games`).then(res => res.data.games),
+    axios.get(`http://${config.serverUrl}/bets`).then(res => res.data.bets)
+  ])
+  const res = injectBetsIngames(gameWeeks, bets, username)
+  return res
 }
+function injectBetsIngames (gameWeeks, bets, username) {
+  let mergeObj = Object.assign({}, gameWeeks)
+  for (const bet of bets) {
+    const gamesInWeek = mergeObj[bet.playWeek]
+    const gameWeekForBet = gamesInWeek.find(game => bet.gameId === game.id)
 
-async function getGames (token) {
-  let games
-  games = await axios.get(`http://${config.serverUrl}/games`)
-    .then(res => res.data.games)
-    // const username = await dbAdapter.getUserFromAuth(token)
-    // const userBets = await dbAdapter.getUserBets(username)
-  console.log('sss', JSON.stringify(games))
-
-  return games
-  // return games.map(game => {
-  //   Object.assign({}, game,
-  //     userBets.find(bet => bet.id === game.id)
-  //   )
-  // })
+    const betInfo = {
+      username,
+      outcome: bet.outcome,
+      isCurrentUsersBet: bet.username === username
+    }
+    gameWeekForBet.bets ? gameWeekForBet.bets.push(betInfo) : gameWeekForBet.bets = [betInfo]
+  }
+  return mergeObj
 }
-
 export {
-  getGames,
-  updateCollectedTimestamp
+  getGamesAndBets
 }

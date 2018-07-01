@@ -3,6 +3,7 @@
 const r = require('rethinkdbdash')({
   servers: [{ host: 'rethinkdb', port: 28015 }]
 })
+var crypto = require('crypto')
 
 function insertGames (games) {
   return r.db('nfl').table('games').insert(games, {conflict: 'update'})
@@ -15,7 +16,11 @@ function getGamesByWeek () {
 }
 
 function getUserBets (username) {
-  return r.db('nfl').table('users').filter({ username })
+  return r.db('nfl').table('bets').filter({ username })
+}
+
+function getAllbets () {
+  return r.db('nfl').table('bets')
 }
 
 function setCollectedDate (date) {
@@ -36,19 +41,18 @@ function getCollectedDate () {
       return res.date
     })
 }
-function updateBet (username, gameId, teamName, outcome) {
+function updateBet (username, gameId, teamName, outcome, week) {
   return r.db('nfl')
-    .table('users')
-    .filter({ username })
-    .update(row => ({
-      bets: row('bets').filter(bet => bet('gameId').ne(gameId))
-        .append({
-          teamName,
-          outcome,
-          gameId,
-          date: new Date()
-        })
-    }))
+    .table('bets')
+    .insert({
+      teamName,
+      outcome,
+      id: getBetId(username, gameId),
+      gameId,
+      date: new Date(),
+      username,
+      playWeek: week
+    }, {conflict: 'update'})
 }
 function addAuthTokenToUser (username, token) {
   return r.db('nfl')
@@ -61,13 +65,22 @@ function getUserFromAuth () {
   return Promise.resolve('intemicke@gmail.com')
 }
 
+function getBetId (username, gameId) {
+  return crypto.createHash('md5').update(username + gameId).digest('hex')
+}
+
+function getGame (id) {
+  return r.db('nfl').table('games').get(id)
+}
 module.exports = {
   insertGames,
   getUserBets,
+  getAllbets,
   updateBet,
   getGamesByWeek,
   setCollectedDate,
   getCollectedDate,
   addAuthTokenToUser,
-  getUserFromAuth
+  getUserFromAuth,
+  getGame
 }
