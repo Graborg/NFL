@@ -23,16 +23,18 @@
         class="elevation-2 playersTable"
         hide-actions
       >
-        <template slot="items" scope="props">
-          <td class="text-xs-left avatar">
-            <v-avatar :rounded="true">
-              <img :src="props.item.avatar" >
-            </v-avatar>
-          </td>
-          <td class="body-2 text-xs-left player-name">{{ props.item.name }}</td>
-          <td class="text-xs-left">{{ props.item.points }}</td>
-          <td class="text-xs-left">{{ props.item.streak }}</td>
-          <td class="text-xs-left">{{ props.item.successRate }}</td>
+        <template slot="items" scope="props" class="playerRow">
+          <tr :class="props.item.name === userDisplayName ? 'teal lighten-5' : ''">
+            <td class="text-xs-left avatar">
+              <v-avatar :rounded="true">
+                <img :src="props.item.avatar" >
+              </v-avatar>
+            </td>
+            <td class="body-2 text-xs-left player-name">{{ props.item.name }}</td>
+            <td class="text-xs-left">{{ props.item.points }}</td>
+            <td class="text-xs-left">{{ props.item.streak }}</td>
+            <td class="text-xs-left">{{ props.item.successRate }}</td>
+          </tr>
         </template>
       </v-data-table>
       <div class="filterscontainer">
@@ -47,7 +49,7 @@
           :lazy="true" 
           v-if="showWeek(gameWeekNo, gameWeek)" 
           :value="gameWeekNo === '36' && isMounted" 
-          v-bind:class="{ teal: gameWeekNo === '36' }" 
+          v-bind:class="{ 'teal lighten-2': gameWeekNo === '36' }" 
         >
           <div slot="header">Week {{gameWeekNo}}</div>
           <v-list>
@@ -90,15 +92,31 @@
           { text: 'successRate', value: 'successRate', sortable: false, align: 'left' }
         ],
         players: [
-          {avatar: 'croppedpuddi.jpg', name: 'Puddis', points: 0, streak: 0, successRate: 0},
-          {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
-          {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
+          {
+            avatar: 'croppedpuddi.jpg',
+            name: 'Puddis',
+            points: 0,
+            streak: 0,
+            successRate: 0,
+            username: 'Puddis@pudde.se'
+          },
+          {
+            avatar: 'nicke.png',
+            name: 'Darin',
+            points: 0,
+            streak: 0,
+            successRate: 0,
+            username: 'intemicke@gmail.com'
+          },
+          {
+            avatar: 'namikosmall.jpg',
+            name: 'Namko',
+            points: 0,
+            streak: 0,
+            successRate: 0,
+            username: 'nambo@namko.se'
+          }
         ],
-        userNameToDisplayNameMap: {
-          'puddis': 'Puddis',
-          'intemicke@gmail.com': 'Darin',
-          'nambo@namko.se': 'Namko'
-        },
         showAllGames: false,
         clipped: false,
         fixed: false,
@@ -125,15 +143,35 @@
         const highestWeek = moment().week() + 15 // 24
   
         return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
+      },
+      calculatePoints () {
+        this.players = this.players.map(player =>
+          Object.assign({}, player, {
+            points: this.bets.reduce((sum, bet) => {
+              if (bet.username === player.username && bet.successful) {
+                return sum + 1
+              }
+              return sum
+            }, 0)
+          })
+        )
+      },
+      calculateStreak () {
+        return 0
+      },
+      calculateSuccessRate () {
+        return 0
       }
     },
     components: {Game, Auth},
     async mounted () {
       this.username = localStorage.getItem('username')
       this.signedIn = !!this.username
-      this.userDisplayName = this.userNameToDisplayNameMap[this.username]
+      this.userDisplayName = this.players.find(player => player.username === this.username).name
       if (this.signedIn) {
         this.gameWeeks = await utils.getGamesAndBets(this.username)
+        this.bets = await utils.getBets()
+        this.calculatePoints()
       }
       setTimeout(() => {
         this.isMounted = true

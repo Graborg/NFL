@@ -54,6 +54,11 @@ export function addAuthTokenToUser (username, token) {
     .update({ token })
 }
 
+export function getGame (id) {
+  return r.db('nfl')
+    .table('games')
+    .get(id)
+}
 export function getUserFromAuth () {
   return Promise.resolve('intemicke@gmail.com')
 }

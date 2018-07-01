@@ -6,8 +6,7 @@ async function getGamesAndBets (username) {
     axios.get(`http://${config.serverUrl}/games`).then(res => res.data.games),
     axios.get(`http://${config.serverUrl}/bets`).then(res => res.data.bets)
   ])
-  const res = injectBetsIngames(gameWeeks, bets, username)
-  return res
+  return injectBetsIngames(gameWeeks, bets, username)
 }
 function injectBetsIngames (gameWeeks, bets, username) {
   let mergeObj = Object.assign({}, gameWeeks)
@@ -24,6 +23,11 @@ function injectBetsIngames (gameWeeks, bets, username) {
   }
   return mergeObj
 }
+function getBets () {
+  return axios.get(`http://${config.serverUrl}/bets`)
+    .then(res => res.data.bets)
+}
 export {
-  getGamesAndBets
+  getGamesAndBets,
+  getBets
 }

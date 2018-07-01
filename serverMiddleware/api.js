@@ -8,7 +8,8 @@ const config = require('../config')
 const {
   formatGamesFromUrl,
   dataCollectedToday,
-  getDataFromSportsRadar
+  getDataFromSportsRadar,
+  addBetSuccess
 } = require('./apiUtils')
 
 app.use(bodyParser.json())
@@ -24,6 +25,7 @@ app.post('/bets', validateToken, async (req, res) => {
 
 app.get(`/bets`, (req, res) => {
   return dbAdapter.getUserBets(req.username)
+    .then(addBetSuccess)
     .then(bets => {
       res.json({
         bets

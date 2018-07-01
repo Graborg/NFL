@@ -59,9 +59,15 @@ function getDataFromSportsRadar () {
     .then(games => games.reduce(formatGamesFromUrl, {}))
 }
 
+function addBetSuccess (bets) {
+  return Promise.all(bets.map(async bet => Object.assign({}, bet, {
+    successful: await dbAdapter.getGame(bet.gameId).then(game => getOutcome(game) === bet.outcome)
+  })))
+}
 module.exports = {
   formatGamesFromUrl,
   getOutcome,
   dataCollectedToday,
-  getDataFromSportsRadar
+  getDataFromSportsRadar,
+  addBetSuccess
 }
