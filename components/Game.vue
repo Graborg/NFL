@@ -50,7 +50,7 @@ export default {
       deadlineDate: '',
       submitBtnText: 'LOADING...',
       submitted: false,
-      locked: this.game.status === 'closed' || this.game.deadlineReached,
+      locked: this.game.status === 'closed' || this.isPastDeadline(),
       activeBtn: 'indigo lighten-1 white--text',
       passiveBtn: 'indigo white--text',
       homeBtnClass: 'indigo white--text',
@@ -61,10 +61,14 @@ export default {
     }
   },
   methods: {
+    isPastDeadline () {
+      const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+
+      return timeToDeadline < 0
+    },
     updateSubmitBtn () {
       let self = this
 
-      let timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
       const gameStatus = this.game.status
 
       switch (gameStatus) {
@@ -77,12 +81,12 @@ export default {
         case 'postponed':
           this.submitBtnText = `Choose outcome (postponed)`
           break
-        default: // Still open
-          if (this.submitted) {
-            this.submitBtnText = `Waiting for game to start`
-          } else if (timeToDeadline < 0) {
-            this.lock = true
+        default: // Game hasnt begun
+          const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+          if (this.isPastDeadline()) {
             this.submitBtnText = `There's no goin' back now`
+          } else if (this.submitted) {
+            this.submitBtnText = `Waiting for game to start`
           } else if (this.outcomeSelected) {
             this.submitBtnText = `Submit (${timeToDeadline})`
           } else {
