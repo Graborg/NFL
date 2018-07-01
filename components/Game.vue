@@ -50,7 +50,7 @@ export default {
       deadlineDate: '',
       submitBtnText: 'LOADING...',
       submitted: false,
-      locked: false,
+      locked: this.game.status === 'closed' || this.game.deadlineReached,
       activeBtn: 'indigo lighten-1 white--text',
       passiveBtn: 'indigo white--text',
       homeBtnClass: 'indigo white--text',
@@ -92,7 +92,7 @@ export default {
       requestAnimationFrame(self.updateSubmitBtn)
     },
     toggleTeamChoice (event) {
-      if (!this.locked && !this.submitted && this.game.status !== 'closed') {
+      if (!this.locked && !this.submitted) {
         this.outcomeSelected = !this.outcomeSelected
         const targetBtn = event.currentTarget
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
@@ -118,14 +118,41 @@ export default {
         }
       }
     },
+    updateGameFromDB () {
+      const myBet = this.game.bets.find(bet => bet.isCurrentUsersBet)
+
+      if (myBet) {
+        this.submitted = true
+        this.outcomeSelected = true
+        const chosenBtnClass = 'card teal white--text'
+        const notChosenBtnClass = 'card btn--disabled'
+
+        this.awayBtnClass = myBet.outcome === 'away' ? chosenBtnClass : notChosenBtnClass
+        this.tieBtnClass = myBet.outcome === 'tie' ? chosenBtnClass : notChosenBtnClass
+        this.homeBtnClass = myBet.outcome === 'home' ? chosenBtnClass : notChosenBtnClass
+      }
+    },
+    setGameToClosed () {
+      this.awayBtnClass = 'btn--disabled'
+      this.tieBtnClass = 'btn--disabled'
+      this.homeBtnClass = 'btn--disabled'
+
+      if (this.game.outcome === 'home') {
+        this.homeBtnClass = 'green white--text'
+      } else if (this.game.outcome === 'away') {
+        this.awayBtnClass = 'green white--text'
+      } else {
+        this.tieBtnClass = 'green white--text'
+      }
+    },
     mouseLeave (event) {
       event.preventDefault()
-      if (this.game.status !== 'closed') {
+      if (this.locked) {
         event.currentTarget.classList.remove('lighten-1')
       }
     },
     mouseOver (event) {
-      if (this.game.status !== 'closed' && !this.submitted) {
+      if (this.locked && !this.submitted) {
         event.currentTarget.classList.add('lighten-1')
       }
     },
@@ -146,18 +173,11 @@ export default {
     }
   },
   mounted: function () {
+    if (this.game.bets) {
+      this.updateGameFromDB()
+    }
     if (this.game.status === 'closed') {
-      this.awayBtnClass = 'btn--disabled'
-      this.tieBtnClass = 'btn--disabled'
-      this.homeBtnClass = 'btn--disabled'
-
-      if (this.game.outcome === 'home') {
-        this.homeBtnClass = 'green white--text'
-      } else if (this.game.outcome === 'away') {
-        this.awayBtnClass = 'green white--text'
-      } else {
-        this.tieBtnClass = 'green white--text'
-      }
+      this.setGameToClosed()
     }
     this.updateSubmitBtn()
   }
