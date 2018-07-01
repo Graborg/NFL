@@ -41,7 +41,7 @@ function getCollectedDate () {
       return res.date
     })
 }
-function updateBet (username, gameId, teamName, outcome) {
+function updateBet (username, gameId, teamName, outcome, week) {
   return r.db('nfl')
     .table('bets')
     .insert({
@@ -50,7 +50,8 @@ function updateBet (username, gameId, teamName, outcome) {
       id: getBetId(username, gameId),
       gameId,
       date: new Date(),
-      username
+      username,
+      playWeek: week
     }, {conflict: 'update'})
 }
 function addAuthTokenToUser (username, token) {
@@ -67,6 +68,10 @@ function getUserFromAuth () {
 function getBetId (username, gameId) {
   return crypto.createHash('md5').update(username + gameId).digest('hex')
 }
+
+function getGame (id) {
+  return r.db('nfl').table('games').get(id)
+}
 module.exports = {
   insertGames,
   getUserBets,
@@ -76,5 +81,6 @@ module.exports = {
   setCollectedDate,
   getCollectedDate,
   addAuthTokenToUser,
-  getUserFromAuth
+  getUserFromAuth,
+  getGame
 }
