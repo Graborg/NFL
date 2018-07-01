@@ -5,7 +5,8 @@
 
   <v-app light v-if="signedIn">
     <v-toolbar fixed>
-      <v-toolbar-title v-text="`Welcome to ${title} ${username}`"></v-toolbar-title>
+      <span>Welcome to National Flaps League </span>
+      <span class='userDisplayName'>{{userDisplayName}}</span>
       <v-spacer></v-spacer>
       <v-btn
         icon
@@ -93,6 +94,11 @@
           {avatar: 'nicke.png', name: 'Darin', points: 0, streak: 0, successRate: 0},
           {avatar: 'namikosmall.jpg', name: 'Namko', points: 0, streak: 0, successRate: 0}
         ],
+        userNameToDisplayNameMap: {
+          'puddis': 'Puddis',
+          'intemicke@gmail.com': 'Darin',
+          'nambo@namko.se': 'Namko'
+        },
         showAllGames: false,
         clipped: false,
         fixed: false,
@@ -104,6 +110,7 @@
         title: 'National Flaps League',
         log: ['nothing', 'here'],
         isMounted: false,
+        userDisplayName: '',
         username: ''
       }
     },
@@ -122,10 +129,11 @@
     },
     components: {Game, Auth},
     async mounted () {
-      const username = localStorage.getItem('username')
-      this.signedIn = !!username
+      this.username = localStorage.getItem('username')
+      this.signedIn = !!this.username
+      this.userDisplayName = this.userNameToDisplayNameMap[this.username]
       if (this.signedIn) {
-        this.gameWeeks = await utils.getGamesAndBets(username)
+        this.gameWeeks = await utils.getGamesAndBets(this.username)
       }
       setTimeout(() => {
         this.isMounted = true
@@ -187,5 +195,17 @@
   }
   .switch {
     margin-top: 25px;
+  }
+  .toolbar__content * {
+    font-size: 20px;
+    font-weight: 400;
+    color: rgba(0, 0, 0, 0.51);
+    text-align: right;
+  }
+  .userDisplayName {
+    font-size: 22px;
+    font-weight: 1000;
+    margin-left: 6px
+    color: rgb(0, 150, 136)
   }
 </style>
