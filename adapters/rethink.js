@@ -26,16 +26,12 @@ export function setCollectedDate (date) {
 }
 
 export async function getCollectedDate () {
-  console.log('problem')
-  let ho = await r.db('nfl').table('timestamps').run()
-  console.log('hohoho')
-  console.log(ho)
-  // .get('gamesDataCollected')
-  // .then(res => {
-  //   if (!res) return
-  //
-  //   return res.date
-  // })
+  r.db('nfl').table('timestamps').get('gamesDataCollected').run()
+    .then(res => {
+      if (!res) return
+
+      return res.date
+    })
 }
 export function updateBet (username, gameId, teamName, outcome) {
   return r.db('nfl')
