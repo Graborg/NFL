@@ -2,7 +2,7 @@
 <v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
           <div class="body-1 btn-text">{{game.homeTeam}}</div>
         </v-card>
       </v-flex>
@@ -12,14 +12,14 @@
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
           <div class="body-1 btn-text">{{game.awayTeam}}</div>
         </v-card>
       </v-flex>
       <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
           <div class="body-1"> {{submitBtnText}} </div>
-          <v-progress-circular v-if="submitted && outcomeSelected" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
+          <v-progress-circular v-if="submitted && outcomeSelected && !locked" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
         </v-btn>
       </v-flex>
     </v-layout>
