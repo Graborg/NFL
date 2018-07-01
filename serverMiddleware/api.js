@@ -3,10 +3,10 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 const { validateToken } = require('./middleware')
+const config = require('../config')
 
 const {
   formatGamesFromUrl,
-  getOutcome,
   dataCollectedToday,
   getDataFromSportsRadar
 } = require('./apiUtils')
@@ -32,7 +32,7 @@ app.get(`/bets`, (req, res) => {
 })
 
 app.get(`/games`, async (req, res) => {
-  if (await dataCollectedToday()) {
+  if (await dataCollectedToday() || config.env === 'DEVELOPMENT') {
     return dbAdapter.getGamesByWeek()
       .then(games => games.reduce(formatGamesFromUrl, {}))
       .then(games => {
