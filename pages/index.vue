@@ -24,16 +24,19 @@
         hide-actions
       >
         <template slot="items" scope="props" class="playerRow">
-          <tr :class="props.item.name === userDisplayName ? 'teal lighten-5' : ''">
+          <tr :class="props.item.isCurrentPlayer ? 'teal lighten-5' : ''">
+            <td class='current-player-indicator'>
+              <v-icon color='teal darken-2' v-if="props.item.isCurrentPlayer">brightness_1</v-icon>
+            </td>
             <td class="text-xs-left avatar">
               <v-avatar :rounded="true">
                 <img :src="props.item.avatar" >
               </v-avatar>
             </td>
-            <td class="body-2 text-xs-left player-name">{{ props.item.name }}</td>
-            <td class="text-xs-left">{{ props.item.points }}</td>
-            <td class="text-xs-left">{{ props.item.streak }}</td>
-            <td class="text-xs-left">{{ props.item.successRate }}</td>
+            <td :class="getPlayerTblTdClass(props.item.isCurrentPlayer) + ' body-2 text-xs-left player-name'">{{ props.item.name }}</td>
+            <td :class="getPlayerTblTdClass(props.item.isCurrentPlayer)">{{ props.item.points }}</td>
+            <td :class="getPlayerTblTdClass(props.item.isCurrentPlayer)">{{ props.item.streak }}</td>
+            <td :class="getPlayerTblTdClass(props.item.isCurrentPlayer)">{{ props.item.successRate }}</td>
           </tr>
         </template>
       </v-data-table>
@@ -85,10 +88,11 @@
     data: function () {
       return {
         headers: [
-          { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah', width: '30px' },
-          { text: '', value: 'icon', sortable: false, align: 'left', width: '30px' },
-          { text: 'points', value: 'points', sortable: false, align: 'left' },
-          { text: 'streak', value: 'streak', sortable: false, align: 'left' },
+          { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah', width: '20px' },
+          { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah', width: '20px' },
+          { text: '', value: 'icon', sortable: false, align: 'left', width: '20px' },
+          { text: 'points', value: 'points', sortable: false, align: 'left', width: '20px' },
+          { text: 'streak', value: 'streak', sortable: false, align: 'left', width: '20px' },
           { text: 'successRate', value: 'successRate', sortable: false, align: 'left' }
         ],
         players: [
@@ -161,6 +165,16 @@
       },
       calculateSuccessRate () {
         return 0
+      },
+      setCurrentPlayer () {
+        this.players = this.players.map(player =>
+          Object.assign({}, player, {
+            isCurrentPlayer: player.username === this.username
+          })
+        )
+      },
+      getPlayerTblTdClass (isCurrentPlayer) {
+        return isCurrentPlayer ? 'current-player-row' : ''
       }
     },
     components: {Game, Auth},
@@ -171,6 +185,7 @@
       if (this.signedIn) {
         this.gameWeeks = await utils.getGamesAndBets(this.username)
         this.bets = await utils.getBets()
+        this.setCurrentPlayer()
         this.calculatePoints()
       }
       setTimeout(() => {
@@ -217,6 +232,7 @@
   }
   .avatar {
     padding-right: 0px !important;
+    padding-left: 0px !important;
   }
   .filterscontainer {
     justify-content: center;
@@ -248,5 +264,20 @@
   }
   .playersTable {
     margin-top: 65px;
+  }
+  .current-player-indicator {
+    padding-right: 7px !important;
+    padding-left: 7px !important;
+  }
+  td {
+    padding-right: 10px !important;
+    padding-left: 10px !important;
+  }
+  th {
+    padding-right: 6px !important;
+    padding-left: 6px !important;
+  }
+  .current-player-row {
+    font-weight: 1000 !important;
   }
 </style>
