@@ -31,10 +31,15 @@ function getOutcome (game) {
 }
 
 function dataCollectedToday () {
-  // const today = moment().format('YYYY-MM-DD')
-  return true
-  // return dbAdapter.getCollectedDate()
-  //   .then(date => today === date)
+  const today = moment().format('YYYY-MM-DD')
+  return dbAdapter.getCollectedDate()
+    .then(date => today === date)
+}
+
+function updateCollectedTimestamp () {
+  console.log('Got data, updating timestamp')
+  const today = moment().format('YYYY-MM-DD')
+  return dbAdapter.setCollectedDate(today)
 }
 
 function getDataFromSportsRadar () {
@@ -49,10 +54,9 @@ function getDataFromSportsRadar () {
       )
       dbAdapter.insertGames(games)
     }))
-  // .then(updateCollectedTimestamp)
+    .then(updateCollectedTimestamp)
     .then(dbAdapter.getGamesByWeek)
     .then(games => games.reduce(formatGamesFromUrl, {}))
-    .catch(console.log)
 }
 
 module.exports = {

@@ -8,7 +8,6 @@ var crypto = require('crypto')
 function insertGames (games) {
   return r.db('nfl').table('games').insert(games, {conflict: 'update'})
     .then(() => games)
-    .catch(console.log)
 }
 
 function getGamesByWeek () {

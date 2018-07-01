@@ -101,7 +101,7 @@ export default {
         const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
         this.selectedTeam = event.currentTarget.innerText
 
-        if (this.selectedTeam === '-') { // Tie
+        if (this.selectedTeam === '-') {
           this.selectedOutcome = 'tie'
         } else {
           this.selectedOutcome = this.selectedTeam === this.game.awayTeam ? 'away' : 'home'
@@ -150,12 +150,12 @@ export default {
     },
     mouseLeave (event) {
       event.preventDefault()
-      if (this.locked) {
+      if (!this.locked) {
         event.currentTarget.classList.remove('lighten-1')
       }
     },
     mouseOver (event) {
-      if (this.locked && !this.submitted) {
+      if (!this.locked && !this.submitted) {
         event.currentTarget.classList.add('lighten-1')
       }
     },
