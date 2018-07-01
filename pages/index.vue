@@ -20,7 +20,7 @@
       <v-data-table
         v-bind:headers="headers"
         :items="players"
-        class="elevation-2 "
+        class="elevation-2 playersTable"
         hide-actions
       >
         <template slot="items" scope="props">
@@ -83,8 +83,8 @@
     data: function () {
       return {
         headers: [
-          { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah' },
-          { text: '', value: 'icon', sortable: false, align: 'left' },
+          { text: '', value: 'icon', sortable: false, align: 'left', class: 'yeah', width: '30px' },
+          { text: '', value: 'icon', sortable: false, align: 'left', width: '30px' },
           { text: 'points', value: 'points', sortable: false, align: 'left' },
           { text: 'streak', value: 'streak', sortable: false, align: 'left' },
           { text: 'successRate', value: 'successRate', sortable: false, align: 'left' }
@@ -197,15 +197,18 @@
     margin-top: 25px;
   }
   .toolbar__content * {
-    font-size: 20px;
+    font-size: 15px;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.51);
     text-align: right;
   }
   .userDisplayName {
-    font-size: 22px;
+    font-size: 17px;
     font-weight: 1000;
     margin-left: 6px
     color: rgb(0, 150, 136)
+  }
+  .playersTable {
+    margin-top: 65px;
   }
 </style>
