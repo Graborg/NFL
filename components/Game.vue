@@ -50,9 +50,7 @@ export default {
       deadlineDate: '',
       submitBtnText: 'LOADING...',
       submitted: false,
-      locked: this.game.status === 'closed' || this.isPastDeadline(),
-      activeBtn: 'indigo lighten-1 white--text',
-      passiveBtn: 'indigo white--text',
+      locked: this.isPastDeadline() || this.game.status === 'inprogress' || this.game.status === 'closed',
       homeBtnClass: 'indigo white--text',
       tieBtnClass: 'indigo white--text',
       awayBtnClass: 'indigo white--text',
@@ -66,7 +64,7 @@ export default {
 
       return timeToDeadline < 0
     },
-    updateSubmitBtn () {
+    updateSubmitBtnText () {
       let self = this
 
       const gameStatus = this.game.status
@@ -83,6 +81,7 @@ export default {
           break
         default: // Game hasnt begun
           const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
+
           if (this.isPastDeadline()) {
             this.submitBtnText = `There's no goin' back now`
           } else if (this.submitted) {
@@ -93,7 +92,7 @@ export default {
             this.submitBtnText = `Choose outcome (${timeToDeadline})`
           }
       }
-      requestAnimationFrame(self.updateSubmitBtn)
+      requestAnimationFrame(self.updateSubmitBtnText)
     },
     toggleTeamChoice (event) {
       if (!this.locked && !this.submitted) {
@@ -183,7 +182,7 @@ export default {
     if (this.game.status === 'closed') {
       this.setGameToClosed()
     }
-    this.updateSubmitBtn()
+    this.updateSubmitBtnText()
   }
 }
 </script>
