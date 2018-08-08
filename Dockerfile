@@ -1,4 +1,4 @@
-FROM node:9.4.0
+FROM arm32v6/node:9-alpine
 
 WORKDIR /app
 COPY /components /app/components  
@@ -16,4 +16,4 @@ COPY .eslintrc.js /app/.eslintrc.js
 COPY .babelrc /app/.babelrc
 COPY package.json /app/package.json
 RUN npm install --quiet
-CMD [ "npm", "run", "dev" ]
+CMD npm run dev
