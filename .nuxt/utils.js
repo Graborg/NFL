@@ -49,19 +49,17 @@ export function sanitizeComponent(Component) {
   return Component
 }
 
-export function getMatchedComponents(route, matches = false) {
-  return [].concat.apply([], route.matched.map(function (m, index) {
+export function getMatchedComponents(route) {
+  return [].concat.apply([], route.matched.map(function (m) {
     return Object.keys(m.components).map(function (key) {
-      matches && matches.push(index)
       return m.components[key]
     })
   }))
 }
 
-export function getMatchedComponentsInstances(route, matches = false) {
-  return [].concat.apply([], route.matched.map(function (m, index) {
+export function getMatchedComponentsInstances(route) {
+  return [].concat.apply([], route.matched.map(function (m) {
     return Object.keys(m.instances).map(function (key) {
-      matches && matches.push(index)
       return m.instances[key]
     })
   }))
@@ -149,17 +147,12 @@ export async function setContext(app, context) {
       } else {
         path = formatUrl(path, query)
         if (process.server) {
-          app.context.next({
-            path: path,
-            status: status
-          })
+          app.context.res.setHeader('Location', path)
+          app.context.res.statusCode = status
+          app.nuxt._redirected = true
         }
         if (process.client) {
-          // https://developer.mozilla.org/en-US/docs/Web/API/Location/replace
-          window.location.replace(path)
-
-          // Throw a redirect error
-          throw new Error('ERR_REDIRECT')
+          window.location = path
         }
       }
     }

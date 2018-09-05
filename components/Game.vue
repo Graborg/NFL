@@ -164,7 +164,7 @@ export default {
       if (this.submitted) {
         axios({
           method: 'post',
-          url: `http://localhost:3333/bets`,
+          url: `http://localhost:7331/bets`,
           headers: {Authorization: localStorage.getItem('token')},
           data: {
             gameId: this.game.id,

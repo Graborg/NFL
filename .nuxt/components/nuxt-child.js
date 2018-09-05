@@ -1,8 +1,7 @@
 export default {
   name: 'nuxt-child',
   functional: true,
-  props: ['keepAlive'],
-  render (h, { parent, data, props }) {
+  render (h, { parent, data }) {
     data.nuxtChild = true
     const _parent = parent
     const transitions = parent.$nuxt.nuxt.transitions
@@ -29,25 +28,13 @@ export default {
         listeners[key] = transition[key].bind(_parent)
       }
     })
-    // Add triggerScroll event on beforeEnter (fix #1376)
-    let beforeEnter = listeners.beforeEnter
-    listeners.beforeEnter = (el) => {
-      window.$nuxt.$emit('triggerScroll')
-      if (beforeEnter) return beforeEnter.call(_parent, el)
-    }
 
-    let routerView = [
-      h('router-view', data)
-    ]
-    if (typeof props.keepAlive !== 'undefined') {
-      routerView = [
-        h('keep-alive', routerView)
-      ]
-    }
     return h('transition', {
       props: transitionProps,
       on: listeners
-    }, routerView)
+    }, [
+      h('router-view', data)
+    ])
   }
 }
 

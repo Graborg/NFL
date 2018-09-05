@@ -11,7 +11,7 @@ module.exports = {
       { name: 'google-signin-client_id', content: '349826698169-qbn1ieku6pdpt03emlgi5i3q2aa7itl9.apps.googleusercontent.com' }
     ],
     script: [
-        { src: "https://apis.google.com/js/platform.js?onload=onLoad" }
+      { src: 'https://apis.google.com/js/platform.js?onload=onLoad' }
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' },
@@ -19,11 +19,11 @@ module.exports = {
     ]
   },
   api: {
-    baseURL: 'http://localhost:3333'
+    baseURL: 'http://localhost:7331'
   },
-  serverMiddleware: ['serverMiddleware/api.js'],
+  // serverMiddleware: ['serverMiddleware/api.js'],
   // serverMiddleware: [{ path: '/api', handler: 'serverMiddleware/api.js' }],
-  plugins: [ {src: '~/plugins/vuetify.js', ssr: true}],
+  plugins: [ { src: '~/plugins/vuetify.js', ssr: true } ],
   css: [
     '~/assets/style/app.styl'
   ],

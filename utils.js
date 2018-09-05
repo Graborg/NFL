@@ -1,5 +1,7 @@
 const axios = require('axios')
-const config = require('./config')
+const config = {
+  serverUrl: 'localhost:7331'
+}
 
 async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
