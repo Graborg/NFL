@@ -51,8 +51,8 @@
           :key="gameWeekNo" 
           :lazy="true" 
           v-if="showWeek(gameWeekNo, gameWeek)" 
-          :value="gameWeekNo === '36' && isMounted" 
-          v-bind:class="{ 'teal lighten-2': gameWeekNo === '36' }" 
+          :value="isCurrentWeek(gameWeekNo) && isMounted" 
+          v-bind:class="{ 'teal lighten-2': isCurrentWeek(gameWeekNo) }" 
         >
           <div slot="header">Week {{gameWeekNo}}</div>
           <v-list>
@@ -118,7 +118,7 @@
             points: 0,
             streak: 0,
             successRate: 0,
-            username: 'mikael.graborg@iteam.se' // 'nambo@namko.se'
+            username: 'mikael.graborg@iteam.se'
           }
         ],
         showAllGames: false,
@@ -166,6 +166,9 @@
         const highestWeek = moment().week() + 15 // 24
   
         return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
+      },
+      isCurrentWeek (week) {
+        return moment().week() === parseInt(week)
       },
       calculatePoints () {
         this.players = this.players.map(player =>
