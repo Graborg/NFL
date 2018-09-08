@@ -72,7 +72,7 @@
     <!-- <log></log> -->
   </v-app>
 
-  <Auth v-else v-on:loggedIn="signedIn = true">
+  <Auth v-else v-on:successfulAuth="signInUser">
   </Auth>
 </div>
 
@@ -118,7 +118,7 @@
             points: 0,
             streak: 0,
             successRate: 0,
-            username: 'nambo@namko.se'
+            username: 'mikael.graborg@iteam.se' // 'nambo@namko.se'
           }
         ],
         showAllGames: false,
@@ -140,6 +140,25 @@
       logout () {
         this.signedIn = false
         localStorage.removeItem('token')
+      },
+      signInUser: function (username, token) {
+        const userIsValid = !!this.players.find(player => player.username === username)
+        if (userIsValid) {
+          localStorage.setItem('token', token)
+          localStorage.setItem('username', username)
+          this.signedIn = true
+          return this.loadMainPage()
+        }
+      },
+      async loadMainPage () {
+        this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
+        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
+        this.bets = await utils.getBets()
+        this.setCurrentPlayer()
+        this.calculatePoints()
+        setTimeout(() => {
+          this.isMounted = true
+        }, 1000)
       },
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
@@ -169,7 +188,7 @@
       setCurrentPlayer () {
         this.players = this.players.map(player =>
           Object.assign({}, player, {
-            isCurrentPlayer: player.username === this.username
+            isCurrentPlayer: player.username === localStorage.getItem('username')
           })
         )
       },
@@ -179,19 +198,10 @@
     },
     components: {Game, Auth},
     async mounted () {
-      this.username = localStorage.getItem('username')
-      this.signedIn = !!this.username
+      this.signedIn = !!localStorage.getItem('username')
       if (this.signedIn) {
-        console.error('LOL')
-        this.userDisplayName = this.players.find(player => player.username === this.username).name
-        this.gameWeeks = await utils.getGamesAndBets(this.username)
-        this.bets = await utils.getBets()
-        this.setCurrentPlayer()
-        this.calculatePoints()
+        await this.loadMainPage()
       }
-      setTimeout(() => {
-        this.isMounted = true
-      }, 1000)
     }
   }
 </script>

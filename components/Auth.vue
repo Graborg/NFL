@@ -26,8 +26,6 @@ export default {
       // if (alreadyHasTokenInLocalStorage) this emit loggedin
       const token = googleUser.getAuthResponse(true).id_token
       const email = googleUser.getBasicProfile().getEmail()
-      localStorage.setItem('token', token)
-      localStorage.setItem('username', email)
 
       // axios.patch(`http://localhost:3333/users/${urlencode(username)}`, {
       //   token
@@ -39,7 +37,7 @@ export default {
       //                                         include auth token in every request -> | auth token still valid? return request. Invalid? Then return console.error();
       //                                                                       <- error |
       //                                                       get new auth token -> |
-      this.$emit('loggedIn')
+      this.$emit('successfulAuth', email, token)
     }
   },
   mounted () {
