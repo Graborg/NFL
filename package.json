@@ -5,17 +5,18 @@
   "author": "Mikael Graborg <mgraborg@gmail.com>",
   "scripts": {
     "dev": "HOST=0.0.0.0 PORT=3333 nuxt",
-    "build": "nuxt build",
-    "start": "nuxt start",
+    "build": "NODE_ENV=development nuxt build",
+    "start": "NODE_ENV=development nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "ajv": "^6.5.3",
     "axios": "^0.16.2",
     "googleapis": "25.0.0",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
     "net": "^1.0.2",
-    "nuxt": "1.0.0",
+    "nuxt": "^1.4.2",
     "tls": "0.0.1",
     "urlencode": "^1.1.0",
     "vue-async-data": "^1.0.2",

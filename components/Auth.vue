@@ -24,8 +24,10 @@ export default {
   methods: {
     onSignIn: function (googleUser) {
       // if (alreadyHasTokenInLocalStorage) this emit loggedin
-      let token = googleUser.getAuthResponse(true).id_token
+      const token = googleUser.getAuthResponse(true).id_token
+      const email = googleUser.getBasicProfile().getEmail()
       localStorage.setItem('token', token)
+      localStorage.setItem('username', email)
 
       // axios.patch(`http://localhost:3333/users/${urlencode(username)}`, {
       //   token

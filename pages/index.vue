@@ -23,7 +23,7 @@
         class="elevation-2 playersTable"
         hide-actions
       >
-        <template slot="items" scope="props" class="playerRow">
+        <template slot="items" slot-scope="props" class="playerRow">
           <tr :class="props.item.isCurrentPlayer ? 'teal lighten-5' : ''">
             <td class='current-player-indicator'>
               <v-icon color='teal darken-2' v-if="props.item.isCurrentPlayer">brightness_1</v-icon>
@@ -181,8 +181,9 @@
     async mounted () {
       this.username = localStorage.getItem('username')
       this.signedIn = !!this.username
-      this.userDisplayName = this.players.find(player => player.username === this.username).name
       if (this.signedIn) {
+        console.error('LOL')
+        this.userDisplayName = this.players.find(player => player.username === this.username).name
         this.gameWeeks = await utils.getGamesAndBets(this.username)
         this.bets = await utils.getBets()
         this.setCurrentPlayer()
