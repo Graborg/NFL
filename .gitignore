@@ -6,7 +6,7 @@ npm-debug.log
 
 # Nuxt build
 .nuxt
-
+rethinkdb_data
 # Nuxt generate
 dist
 
