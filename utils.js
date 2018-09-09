@@ -4,8 +4,8 @@ const apiUrl = process.env.apiUrl
 
 async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
-    axios.get(`http://${apiUrl}/games`).then(res => res.data.games),
-    axios.get(`http://${apiUrl}/bets`).then(res => res.data.bets)
+    axios.get(`https://${apiUrl}/games`).then(res => res.data.games),
+    axios.get(`https://${apiUrl}/bets`).then(res => res.data.bets)
   ])
   return injectBetsIngames(gameWeeks, bets, username)
 }
@@ -25,7 +25,7 @@ function injectBetsIngames (gameWeeks, bets, username) {
   return mergeObj
 }
 function getBets () {
-  return axios.get(`http://${apiUrl}/bets`)
+  return axios.get(`https://${apiUrl}/bets`)
     .then(res => res.data.bets)
 }
 export {
