@@ -1,6 +1,6 @@
 {
   "name": "nationalflapsleauge",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Nuxt.js + Vuetify.js project",
   "author": "Mikael Graborg <mgraborg@gmail.com>",
   "scripts": {
