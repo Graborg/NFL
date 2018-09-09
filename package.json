@@ -5,8 +5,8 @@
   "author": "Mikael Graborg <mgraborg@gmail.com>",
   "scripts": {
     "dev": "NODE_ENV=development HOST=0.0.0.0 PORT=3333 nuxt",
-    "build": "API_URL=flaps-no-ip.info NODE_ENV=production HOST=0.0.0.0 nuxt build",
-    "start": "API_URL=flaps-no-ip.info HOST=0.0.0.0 nuxt start",
+    "build": "API_URL=flaps-no-ip.info/api NODE_ENV=production HOST=0.0.0.0 nuxt build",
+    "start": "API_URL=flaps-no-ip.info/api HOST=0.0.0.0 nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
