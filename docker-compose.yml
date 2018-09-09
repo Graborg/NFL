@@ -26,3 +26,13 @@ services:
     ports:
       - "8888:8080"
       - "28015:28015"
+  nfl-api:
+    image: graborg/nfl-api:latest
+    depends_on:
+      - rethinkdb
+    ports:
+      - "7331:7331"
+  nfl-ui:
+    image: graborg/nfl:latest
+    ports:
+      - '3000:3000'

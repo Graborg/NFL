@@ -1,12 +1,11 @@
 const axios = require('axios')
-const config = {
-  serverUrl: 'localhost:7331'
-}
+
+const apiUrl = process.env.apiUrl
 
 async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
-    axios.get(`http://${config.serverUrl}/games`).then(res => res.data.games),
-    axios.get(`http://${config.serverUrl}/bets`).then(res => res.data.bets)
+    axios.get(`http://${apiUrl}/games`).then(res => res.data.games),
+    axios.get(`http://${apiUrl}/bets`).then(res => res.data.bets)
   ])
   return injectBetsIngames(gameWeeks, bets, username)
 }
@@ -26,7 +25,7 @@ function injectBetsIngames (gameWeeks, bets, username) {
   return mergeObj
 }
 function getBets () {
-  return axios.get(`http://${config.serverUrl}/bets`)
+  return axios.get(`http://${apiUrl}/bets`)
     .then(res => res.data.bets)
 }
 export {

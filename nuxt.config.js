@@ -21,12 +21,13 @@ module.exports = {
   api: {
     baseURL: 'http://localhost:7331'
   },
-  // serverMiddleware: ['serverMiddleware/api.js'],
-  // serverMiddleware: [{ path: '/api', handler: 'serverMiddleware/api.js' }],
   plugins: [ { src: '~/plugins/vuetify.js', ssr: true } ],
   css: [
     '~/assets/style/app.styl'
   ],
+  env: {
+    apiUrl: process.env.API_URL || 'http://localhost:7331'
+  },
   /*
   ** Customize the progress-bar color
   */

@@ -4,9 +4,9 @@
   "description": "Nuxt.js + Vuetify.js project",
   "author": "Mikael Graborg <mgraborg@gmail.com>",
   "scripts": {
-    "dev": "HOST=0.0.0.0 PORT=3333 nuxt",
-    "build": "NODE_ENV=development nuxt build",
-    "start": "NODE_ENV=development nuxt start",
+    "dev": "NODE_ENV=development HOST=0.0.0.0 PORT=3333 nuxt",
+    "build": "API_URL=localhost:7331 NODE_ENV=production HOST=0.0.0.0 nuxt build",
+    "start": "API_URL=localhost:7331 HOST=0.0.0.0 nuxt start",
     "generate": "nuxt generate"
   },
   "dependencies": {
