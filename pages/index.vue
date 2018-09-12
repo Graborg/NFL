@@ -152,8 +152,8 @@
       },
       async loadMainPage () {
         this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
-        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
-        this.bets = await utils.getBets()
+        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'), localStorage.getItem('token'))
+        this.bets = await utils.getBets(localStorage.getItem('token'))
         this.setCurrentPlayer()
         this.calculatePoints()
         setTimeout(() => {

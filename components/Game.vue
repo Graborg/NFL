@@ -28,7 +28,8 @@
 
 <script>
 const moment = require('moment-timezone')
-const axios = require('axios')
+const utils = require('../utils')
+
 moment.updateLocale('en', {
   relativeTime: {
     future: '%s left',
@@ -162,16 +163,7 @@ export default {
     submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        axios({
-          method: 'post',
-          url: `http://localhost:7331/bets`,
-          headers: {Authorization: localStorage.getItem('token')},
-          data: {
-            gameId: this.game.id,
-            teamName: this.selectedTeam,
-            outcome: this.selectedOutcome // Home/away/tie
-          }
-        })
+        return utils.postBet(this.game.id, this.selectedTeam, this.selectedOutcome, localStorage.getItem('token'))
       }
     }
   },

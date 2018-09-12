@@ -1,14 +1,18 @@
 const axios = require('axios')
 
-const apiUrl = process.env.apiUrl
+const http = axios.create({
+  baseURL: process.env.apiUrl
+})
 
-async function getGamesAndBets (username) {
+async function getGamesAndBets (username, token) {
+  axios.defaults.headers.common['Authorization'] = token
   const [gameWeeks, bets] = await Promise.all([
-    axios.get(`https://${apiUrl}/games`).then(res => res.data.games),
-    axios.get(`https://${apiUrl}/bets`).then(res => res.data.bets)
+    http.get('/games').then(res => res.data.games),
+    http.get('/bets').then(res => res.data.bets)
   ])
   return injectBetsIngames(gameWeeks, bets, username)
 }
+
 function injectBetsIngames (gameWeeks, bets, username) {
   let mergeObj = Object.assign({}, gameWeeks)
   for (const bet of bets) {
@@ -24,11 +28,26 @@ function injectBetsIngames (gameWeeks, bets, username) {
   }
   return mergeObj
 }
-function getBets () {
-  return axios.get(`https://${apiUrl}/bets`)
+
+function getBets (token) {
+  axios.defaults.headers.common['Authorization'] = token
+  return http.get('/bets')
     .then(res => res.data.bets)
 }
+
+function postBet (gameId, selectedTeam, selectedOutcome, token) {
+  axios.defaults.headers.common['Authorization'] = token
+  return http.post('/bets', {
+    data: {
+      gameId,
+      teamName: selectedTeam,
+      outcome: selectedOutcome // Home/away/tie
+    }
+  })
+}
+
 export {
   getGamesAndBets,
-  getBets
+  getBets,
+  postBet
 }
