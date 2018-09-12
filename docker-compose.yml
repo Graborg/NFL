@@ -1,23 +1,5 @@
 version: '3'
 services:
-  # nodeserver:
-  #   build: .
-  #   ports:
-  #     - "3333:3333"
-  #   command: npm run dev
-  #   volumes:
-  #     - ./assets:/app/assets
-  #     - ./components:/app/components
-  #     - ./pages:/app/pages
-  #     - ./middleware:/app/middleware
-  #     - ./plugins:/app/plugins
-  #     - ./static:/app/static
-  #     - ./utils:/app/utils
-  #     - ./utils.js:/app/utils.js
-  #     - ./nuxt.config.js:/app/nuxt.config.js
-  #     - ./serverMiddleware:/app/serverMiddleware
-  #     - ./adapters:/app/adapters
-  #     - ./config.json:/app/config.json
   rethinkdb:
     image: rethinkdb
     command: rethinkdb --bind all
@@ -26,13 +8,13 @@ services:
     ports:
       - "8888:8080"
       - "28015:28015"
-  nfl-api:
-    image: graborg/nfl-api:latest
-    depends_on:
-      - rethinkdb
-    ports:
-      - "7331:7331"
-  nfl-ui:
-    image: graborg/nfl:latest
-    ports:
-      - '3000:3000'
+  # nfl-api:
+  #   image: graborg/nfl-api:latest
+  #   depends_on:
+  #     - rethinkdb
+  #   ports:
+  #     - "7331:7331"
+  # nfl-ui:
+  #   image: graborg/nfl:latest
+  #   ports:
+  #     - '3000:3000'
