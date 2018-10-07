@@ -38,10 +38,10 @@ moment.updateLocale('en', {
     ss: '%d seconds',
     m: '%d minute',
     mm: '%d minutes',
-    h: '%d hours',
     hh: '%d hours'
   }
 })
+moment.relativeTimeThreshold('m', 60)
 export default {
   name: 'game',
   props: ['game'],
