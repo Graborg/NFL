@@ -1,14 +1,13 @@
-const axios = require('axios')
 
-const http = axios.create({
-  baseURL: process.env.apiUrl
-})
-
-async function getGamesAndBets (username, token) {
-  axios.defaults.headers.common['Authorization'] = token
+const baseUrl = process.env.apiUrl
+async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
-    http.get('/games').then(res => res.data.games),
-    http.get('/bets').then(res => res.data.bets)
+    fetch(`${baseUrl}/games`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(res => res.games),
+    fetch(`${baseUrl}/bets`, { credentials: 'include' })
+      .then(res => res.json())
+      .then(res => res.bets)
   ])
   return injectBetsIngames(gameWeeks, bets, username)
 }
@@ -29,15 +28,15 @@ function injectBetsIngames (gameWeeks, bets, username) {
   return mergeObj
 }
 
-function getBets (token) {
-  axios.defaults.headers.common['Authorization'] = token
-  return http.get('/bets')
-    .then(res => res.data.bets)
+function getBets () {
+  return fetch(`${baseUrl}/bets`, { credentials: 'include' })
+    .then(res => res.json())
+    .then(res => res.bets)
 }
 
-function postBet (gameId, selectedTeam, selectedOutcome, token) {
-  axios.defaults.headers.common['Authorization'] = token
-  return http.post('/bets', {
+function postBet (gameId, selectedTeam, selectedOutcome) {
+  return fetch(`${baseUrl}/bets`, {
+    credentials: 'include',
     data: {
       gameId,
       teamName: selectedTeam,
@@ -46,8 +45,18 @@ function postBet (gameId, selectedTeam, selectedOutcome, token) {
   })
 }
 
+function getAuthCookie (token) {
+  return fetch(`${baseUrl}/auth`, {
+    method: 'post',
+    credentials: 'include',
+    headers: {'Content-Type': 'application/json; charset=utf-8'},
+    body: JSON.stringify({ token })
+  })
+}
+
 export {
   getGamesAndBets,
   getBets,
-  postBet
+  postBet,
+  getAuthCookie
 }

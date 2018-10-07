@@ -45,14 +45,14 @@
           <v-switch left label="Show all weeks" v-model="showAllGames" dark></v-switch>
         </v-toolbar>
       </div>
-      <v-expansion-panel>      
-        <v-expansion-panel-content 
+      <v-expansion-panel>
+        <v-expansion-panel-content
           v-for="(gameWeek, gameWeekNo) in gameWeeks"
-          :key="gameWeekNo" 
-          :lazy="true" 
-          v-if="showWeek(gameWeekNo, gameWeek)" 
-          :value="isCurrentWeek(gameWeekNo) && isMounted" 
-          v-bind:class="{ 'teal lighten-2': isCurrentWeek(gameWeekNo) }" 
+          :key="gameWeekNo"
+          :lazy="true"
+          v-if="showWeek(gameWeekNo, gameWeek)"
+          :value="isCurrentWeek(gameWeekNo) && isMounted"
+          v-bind:class="{ 'teal lighten-2': isCurrentWeek(gameWeekNo) }"
         >
           <div slot="header">Week {{gameWeekNo}}</div>
           <v-list>
@@ -138,22 +138,25 @@
     },
     methods: {
       logout () {
-        this.signedIn = false
-        localStorage.removeItem('token')
+        const gAuth = gapi.auth2.init()
+        gAuth.disconnect().then(() => {
+          this.signedIn = false
+          localStorage.removeItem('username')
+        })
       },
       signInUser: function (username, token) {
         const userIsValid = !!this.players.find(player => player.username === username)
         if (userIsValid) {
-          localStorage.setItem('token', token)
           localStorage.setItem('username', username)
-          this.signedIn = true
-          return this.loadMainPage()
+          return utils.getAuthCookie(token)
+            .then(() => { this.signedIn = true })
+            .then(() => this.loadMainPage())
         }
       },
       async loadMainPage () {
         this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
-        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'), localStorage.getItem('token'))
-        this.bets = await utils.getBets(localStorage.getItem('token'))
+        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
+        this.bets = await utils.getBets()
         this.setCurrentPlayer()
         this.calculatePoints()
         setTimeout(() => {
@@ -164,7 +167,7 @@
       showWeek: function (playWeekNo, playWeek) {
         const lowestWeek = moment().week() - 1
         const highestWeek = moment().week() + 15 // 24
-  
+
         return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
       },
       isCurrentWeek (week) {
