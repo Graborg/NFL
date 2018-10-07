@@ -35,8 +35,6 @@ function getBets () {
 }
 
 function postBet (gameId, selectedTeam, selectedOutcome) {
-  console.log(gameId)
-
   return fetch(`${baseUrl}/bets`, {
     credentials: 'include',
     method: 'post',
