@@ -48,7 +48,7 @@ function postBet (gameId, selectedTeam, selectedOutcome) {
 }
 
 function getAuthCookie (token) {
-  return fetch(`${baseUrl}/auth`, {
+  return fetch(`api/auth`, {
     method: 'post',
     credentials: 'include',
     headers: {'Content-Type': 'application/json; charset=utf-8'},
