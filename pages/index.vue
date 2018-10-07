@@ -83,7 +83,6 @@
   import Auth from '../components/Auth'
   const utils = require('../utils')
   const moment = require('moment')
-
   export default {
     data: function () {
       return {
@@ -102,7 +101,7 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'Puddis@pudde.se'
+            username: 'lodin.jakob@gmail.com'
           },
           {
             avatar: 'nicke.png',
@@ -110,7 +109,7 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'intemicke@gmail.com'
+            username: process.env.NODE_ENV === 'development' ? 'intemicke@gmail.com' : 'coolniclas@gmail.com'
           },
           {
             avatar: 'namikosmall.jpg',
@@ -118,7 +117,7 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'mikael.graborg@iteam.se'
+            username: process.env.NODE_ENV === 'development' ? 'mikael.graborg@iteam.se' : 'carlfredrikhenning.stenberg@gmail.com'
           }
         ],
         showAllGames: false,
@@ -154,14 +153,18 @@
         }
       },
       async loadMainPage () {
-        this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
-        this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
-        this.bets = await utils.getBets()
-        this.setCurrentPlayer()
-        this.calculatePoints()
-        setTimeout(() => {
-          this.isMounted = true
-        }, 1000)
+        try {
+          this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
+          this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
+          this.bets = await utils.getBets()
+          this.setCurrentPlayer()
+          this.calculatePoints()
+          setTimeout(() => {
+            this.isMounted = true
+          }, 1000)
+        } catch (error) {
+          this.logout()
+        }
       },
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
