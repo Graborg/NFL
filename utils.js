@@ -35,13 +35,17 @@ function getBets () {
 }
 
 function postBet (gameId, selectedTeam, selectedOutcome) {
+  console.log(gameId)
+
   return fetch(`${baseUrl}/bets`, {
     credentials: 'include',
-    data: {
+    method: 'post',
+    headers: { 'Content-Type': 'application/json; charset=utf-8' },
+    body: JSON.stringify({
       gameId,
       teamName: selectedTeam,
-      outcome: selectedOutcome // Home/away/tie
-    }
+      outcome: selectedOutcome // home/away/tie
+    })
   })
 }
 
