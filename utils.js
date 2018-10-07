@@ -1,11 +1,11 @@
 
-const baseUrl = process.env.apiUrl
+// const baseUrl = process.env.apiUrl
 async function getGamesAndBets (username) {
   const [gameWeeks, bets] = await Promise.all([
-    fetch(`${baseUrl}/games`, { credentials: 'include' })
+    fetch(`api/games`, { credentials: 'include' })
       .then(res => res.json())
       .then(res => res.games),
-    fetch(`${baseUrl}/bets`, { credentials: 'include' })
+    fetch(`api/bets`, { credentials: 'include' })
       .then(res => res.json())
       .then(res => res.bets)
   ])
@@ -29,13 +29,13 @@ function injectBetsIngames (gameWeeks, bets, username) {
 }
 
 function getBets () {
-  return fetch(`${baseUrl}/bets`, { credentials: 'include' })
+  return fetch(`api/bets`, { credentials: 'include' })
     .then(res => res.json())
     .then(res => res.bets)
 }
 
 function postBet (gameId, selectedTeam, selectedOutcome) {
-  return fetch(`${baseUrl}/bets`, {
+  return fetch(`api/bets`, {
     credentials: 'include',
     method: 'post',
     headers: { 'Content-Type': 'application/json; charset=utf-8' },
