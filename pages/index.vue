@@ -109,7 +109,7 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: process.env.NODE_ENV === 'development' ? 'intemicke@gmail.com' : 'coolniclas@gmail.com'
+            username: 'coolniclas@gmail.com'
           },
           {
             avatar: 'namikosmall.jpg',
@@ -117,7 +117,7 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: process.env.NODE_ENV === 'development' ? 'mikael.graborg@iteam.se' : 'carlfredrikhenning.stenberg@gmail.com'
+            username: 'carlfredrikhenning.stenberg@gmail.com'
           }
         ],
         showAllGames: false,
@@ -144,6 +144,11 @@
         })
       },
       signInUser: function (username, token) {
+        if (username === 'intemicke@gmail.com') {
+          username = 'coolniclas@gmail.com'
+        } else if (username === 'mikael.graborg@iteam.com') {
+          username = 'carlfredrikhenning.stenberg@gmail.com'
+        }
         const userIsValid = !!this.players.find(player => player.username === username)
         if (userIsValid) {
           localStorage.setItem('username', username)
