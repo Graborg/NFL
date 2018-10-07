@@ -165,13 +165,13 @@
       },
       // Show week if within interval, or toggled showAllGames
       showWeek: function (playWeekNo, playWeek) {
-        const lowestWeek = moment().week() - 1
-        const highestWeek = moment().week() + 15 // 24
+        const lowestWeek = moment().isoWeek() - 1
+        const highestWeek = moment().isoWeek() + 4 // 24
 
         return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
       },
       isCurrentWeek (week) {
-        return moment().week() === parseInt(week)
+        return moment().isoWeek() === parseInt(week)
       },
       calculatePoints () {
         this.players = this.players.map(player =>
