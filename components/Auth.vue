@@ -5,7 +5,6 @@
     </v-container>
 </template>
 <script>
-// const axios = require('axios')
 
 export default {
   name: 'Login',
@@ -23,21 +22,9 @@ export default {
   },
   methods: {
     onSignIn: function (googleUser) {
-      // if (alreadyHasTokenInLocalStorage) this emit loggedin
-      const token = googleUser.getAuthResponse(true).id_token
+      const authRes = googleUser.getAuthResponse(true)
       const email = googleUser.getBasicProfile().getEmail()
-
-      // axios.patch(`http://localhost:3333/users/${urlencode(username)}`, {
-      //   token
-      // })
-
-      // get auth + refresh token, save both in localstorage, send auth_token to api -> |
-      //                                                                                | validate auth_token, (get username?) match username against userId
-      //                                                               <- return userId |
-      //                                         include auth token in every request -> | auth token still valid? return request. Invalid? Then return console.error();
-      //                                                                       <- error |
-      //                                                       get new auth token -> |
-      this.$emit('successfulAuth', email, token)
+      this.$emit('successfulAuth', email, authRes.id_token)
     }
   },
   mounted () {
