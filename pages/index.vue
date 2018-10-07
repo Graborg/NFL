@@ -100,24 +100,24 @@
             avatar: 'croppedpuddi.jpg',
             name: 'Puddis',
             points: 0,
-            streak: 0,
-            successRate: 0,
+            streak: '-',
+            successRate: '-',
             username: 'Puddis@pudde.se'
           },
           {
             avatar: 'nicke.png',
             name: 'Darin',
             points: 0,
-            streak: 0,
-            successRate: 0,
+            streak: '-',
+            successRate: '-',
             username: 'intemicke@gmail.com'
           },
           {
             avatar: 'namikosmall.jpg',
             name: 'Namko',
             points: 0,
-            streak: 0,
-            successRate: 0,
+            streak: '-',
+            successRate: '-',
             username: 'mikael.graborg@iteam.se'
           }
         ],
