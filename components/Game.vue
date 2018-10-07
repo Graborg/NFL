@@ -61,9 +61,7 @@ export default {
   },
   methods: {
     isPastDeadline () {
-      const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
-
-      return timeToDeadline < 0
+      return moment().isAfter(moment(this.game.deadlineDate).subtract(1, 'hours'))
     },
     updateSubmitBtnText () {
       let self = this
@@ -75,22 +73,23 @@ export default {
           this.submitBtnText = `Game finished`
           break
         case 'inprogress':
-          this.submitBtnText = `Waiting for stats`
+          this.submitBtnText = `Game in progress`
           break
         case 'postponed':
           this.submitBtnText = `Choose outcome (postponed)`
           break
         default: // Game hasnt begun
-          const timeToDeadline = moment.tz(this.game.deadlineDate, 'Europe/Stockholm').subtract(1, 'hours').fromNow()
-
+          const gameStart = moment.tz(this.game.deadlineDate, 'Europe/Stockholm')
+          const timeToDeadline = moment(gameStart).subtract(1, 'hours').fromNow()
           if (this.isPastDeadline()) {
-            this.submitBtnText = `There's no goin' back now`
-          } else if (this.submitted) {
-            this.submitBtnText = `Waiting for game to start`
+            this.submitBtnText = `${gameStart.fromNow()} until kickoff`
+            if (!this.submitted) {
+              this.submitBtnText += ', you missed your chance to bet'
+            }
           } else if (this.outcomeSelected) {
             this.submitBtnText = `Submit (${timeToDeadline})`
           } else {
-            this.submitBtnText = `Choose outcome (${timeToDeadline})`
+            this.submitBtnText = `Choose team (${timeToDeadline})`
           }
       }
       requestAnimationFrame(self.updateSubmitBtnText)
@@ -163,7 +162,7 @@ export default {
     submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        return utils.postBet(this.game.id, this.selectedTeam, this.selectedOutcome, localStorage.getItem('token'))
+        return utils.postBet(this.game.id, this.selectedTeam, this.selectedOutcome)
       }
     }
   },
