@@ -11,3 +11,4 @@ rethinkdb_data
 dist
 
 config.json
+.DS_Store
