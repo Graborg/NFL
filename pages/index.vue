@@ -118,6 +118,14 @@
             streak: '-',
             successRate: '-',
             username: 'carlfredrikhenning.stenberg@gmail.com'
+          },
+          {
+            avatar: 'henrikj.jpg',
+            name: 'Henry82',
+            points: 0,
+            streak: '-',
+            successRate: '-',
+            username: 'henrik.1990@gmail.com'
           }
         ],
         showAllGames: false,
