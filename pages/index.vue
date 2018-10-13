@@ -77,7 +77,7 @@
 </div>
 
 </template>
-
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 <script>
   import Game from '../components/Game'
   import Auth from '../components/Auth'
@@ -136,12 +136,17 @@
       }
     },
     methods: {
-      logout () {
-        const gAuth = gapi.auth2.init()
-        gAuth.disconnect().then(() => {
-          this.signedIn = false
-          localStorage.removeItem('username')
-        })
+      async logout () {
+        console.log('Logging out')
+        try {
+          const gAuth = await gapi.auth2.init({ client_id: '349826698169-qbn1ieku6pdpt03emlgi5i3q2aa7itl9.apps.googleusercontent.com' })
+          gAuth.disconnect()
+        } catch (e) {
+          console.error('error logging out:', e)
+        }
+        this.signedIn = false
+        this.isMounted = false
+        localStorage.removeItem('username')
       },
       signInUser: function (username, token) {
         if (username === 'intemicke@gmail.com') {
@@ -159,6 +164,7 @@
       },
       async loadMainPage () {
         try {
+          console.log('load main page')
           this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
           this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
           this.bets = await utils.getBets()
@@ -166,7 +172,7 @@
           this.calculatePoints()
           setTimeout(() => {
             this.isMounted = true
-          }, 1000)
+          }, 500)
         } catch (error) {
           this.logout()
         }
@@ -212,6 +218,9 @@
     },
     components: {Game, Auth},
     async mounted () {
+      gapi.load('auth2', function () { // Ready. });
+        console.log('loaded')
+      })
       this.signedIn = !!localStorage.getItem('username')
       if (this.signedIn) {
         await this.loadMainPage()
