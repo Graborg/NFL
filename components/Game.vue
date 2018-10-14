@@ -81,11 +81,10 @@ export default {
         default: // Game hasnt begun
           const gameStart = moment.tz(this.game.deadlineDate, 'Europe/Stockholm')
           const timeToDeadline = moment(gameStart).subtract(1, 'hours').fromNow()
-          if (this.isPastDeadline()) {
+          if (this.submitted) {
             this.submitBtnText = `${gameStart.fromNow()} until kickoff`
-            if (!this.submitted) {
-              this.submitBtnText += ', you missed your chance to bet'
-            }
+          } else if (this.isPastDeadline()) {
+            this.submitBtnText += `${gameStart.fromNow()} until kickoff, you missed your chance to bet`
           } else if (this.outcomeSelected) {
             this.submitBtnText = `Submit (${timeToDeadline})`
           } else {
