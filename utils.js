@@ -21,7 +21,8 @@ function injectBetsIngames (gameWeeks, bets, username) {
     const betInfo = {
       username,
       outcome: bet.outcome,
-      isCurrentUsersBet: bet.username === username
+      isCurrentUsersBet: bet.username === username,
+      successful: bet.successful
     }
 
     game.bets ? game.bets.push(betInfo) : game.bets = [betInfo]

@@ -3,22 +3,37 @@
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
-          <div class="body-1 btn-text">{{game.homeTeam}}</div>
+          <v-icon v-if="gameIsFinnished && selectedOutcome === 'home'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
+          <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'home') ? 'selectedTeamBtn' : ''}`" >
+            {{game.homeTeam}}
+            </div>
         </v-card>
       </v-flex>
       <v-flex text-xs2-center md1>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="tieBtnClass">
-          <div class="body-1 btn-text">-</div>
+        <v-icon v-if="gameIsFinnished && selectedOutcome === 'tie'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
+          <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'tie') ? 'selectedTeamBtn' : ''}`" >
+            -
+          </div>
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
         <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
-          <div class="body-1 btn-text">{{game.awayTeam}}</div>
+            <v-icon v-if="gameIsFinnished && selectedOutcome === 'away'" left color="green lighten-2" small class='selectedTeamCircle'>brightness_1</v-icon>
+            <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'away') ? 'selectedTeamBtn' : ''}`"  >
+              {{game.awayTeam}}
+            </div>
         </v-card>
       </v-flex>
       <v-flex xs12 md2 class="submit">
         <v-btn :success="true" :disabled="locked || !outcomeSelected" v-on:click="submit" class="teal submit">
-          <div class="body-1"> {{submitBtnText}} </div>
+          <div class="body-1">
+            <v-badge :color="betSuccess ? 'green lighten-2' : 'red lighten-2'" >
+              <v-icon v-if="gameIsFinnished && betSuccess" slot="badge" color="white" small >exposure_plus_1</v-icon>
+              <v-icon v-if="gameIsFinnished && !betSuccess" slot="badge" color="white" small >thumb_down</v-icon>
+              <span>{{submitBtnText}}</span>
+            </v-badge>
+          </div>
           <v-progress-circular v-if="submitted && outcomeSelected && !locked" indeterminate v-bind:size="20" class="white--text"></v-progress-circular>
         </v-btn>
       </v-flex>
@@ -56,7 +71,9 @@ export default {
       tieBtnClass: 'indigo white--text',
       awayBtnClass: 'indigo white--text',
       selectedTeam: '',
-      selectedOutcome: ''
+      selectedOutcome: '',
+      betSuccess: false,
+      gameIsFinnished: this.game.status === 'closed'
     }
   },
   methods: {
@@ -126,12 +143,8 @@ export default {
       if (myBet) {
         this.submitted = true
         this.outcomeSelected = true
-        const chosenBtnClass = 'card teal white--text'
-        const notChosenBtnClass = 'card btn--disabled'
-
-        this.awayBtnClass = myBet.outcome === 'away' ? chosenBtnClass : notChosenBtnClass
-        this.tieBtnClass = myBet.outcome === 'tie' ? chosenBtnClass : notChosenBtnClass
-        this.homeBtnClass = myBet.outcome === 'home' ? chosenBtnClass : notChosenBtnClass
+        this.betSuccess = myBet.successful
+        this.selectedOutcome = myBet.outcome
       }
     },
     setGameToClosed () {
@@ -185,6 +198,9 @@ h1, h2 {
 .btn.btn--disabled {
   color: #741616 !important
 }
+.material-icons.icon.icon.white--text {
+  color: #ffffff !important;
+}
 ul {
   list-style-type: none;
   padding: 0;
@@ -224,4 +240,13 @@ btn.submit {
   margin-right: 5px;
 }
 
+.teamBtn {
+  flex-grow: 1
+}
+.teamBtn.selectedTeamBtn {
+  margin-left: -24px
+}
+.selectedTeamCircle {
+  margin-left: 5px;
+}
 </style>
