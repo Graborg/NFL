@@ -16,14 +16,15 @@ function injectBetsIngames (gameWeeks, bets, username) {
   let mergeObj = Object.assign({}, gameWeeks)
   for (const bet of bets) {
     const gamesInWeek = mergeObj[bet.playWeek]
-    const gameWeekForBet = gamesInWeek.find(game => bet.gameId === game.id)
+    const game = gamesInWeek.find(game => bet.gameId === game.id)
 
     const betInfo = {
       username,
       outcome: bet.outcome,
       isCurrentUsersBet: bet.username === username
     }
-    gameWeekForBet.bets ? gameWeekForBet.bets.push(betInfo) : gameWeekForBet.bets = [betInfo]
+
+    game.bets ? game.bets.push(betInfo) : game.bets = [betInfo]
   }
   return mergeObj
 }
