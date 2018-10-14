@@ -48,7 +48,7 @@ const utils = require('../utils')
 moment.updateLocale('en', {
   relativeTime: {
     future: '%s left',
-    past: 'no new deadline specified...',
+    past: '%s ago',
     s: '%d seconds',
     ss: '%d seconds',
     m: '%d minute',
@@ -100,6 +100,8 @@ export default {
           const timeToDeadline = moment(gameStart).subtract(1, 'hours').fromNow()
           if (this.submitted) {
             this.submitBtnText = `${gameStart.fromNow()} until kickoff`
+          } else if (moment().isAfter(gameStart)) {
+            this.submitBtnext = `LOADING...`
           } else if (this.isPastDeadline()) {
             this.submitBtnText = `${gameStart.fromNow()} until kickoff, you missed your chance to bet`
           } else if (this.outcomeSelected) {
