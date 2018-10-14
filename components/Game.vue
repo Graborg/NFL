@@ -84,9 +84,9 @@ export default {
           if (this.submitted) {
             this.submitBtnText = `${gameStart.fromNow()} until kickoff`
           } else if (this.isPastDeadline()) {
-            this.submitBtnText += `${gameStart.fromNow()} until kickoff, you missed your chance to bet`
+            this.submitBtnText = `${gameStart.fromNow()} until kickoff, you missed your chance to bet`
           } else if (this.outcomeSelected) {
-            this.submitBtnText = `Submit (${timeToDeadline})`
+            this.submitBtnText = `Submit (${timeToDeadline} before lock)`
           } else {
             this.submitBtnText = `Choose team (${timeToDeadline})`
           }
