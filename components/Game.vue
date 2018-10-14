@@ -49,10 +49,10 @@ moment.updateLocale('en', {
   relativeTime: {
     future: '%s left',
     past: '%s ago',
-    s: '%d seconds',
-    ss: '%d seconds',
-    m: '%d minute',
-    mm: '%d minutes',
+    s: '%d sec',
+    ss: '%d sec',
+    m: '%d mins',
+    mm: '%d mins',
     hh: '%d hours'
   }
 })
@@ -103,11 +103,11 @@ export default {
           } else if (moment().isAfter(gameStart)) {
             this.submitBtnext = `LOADING...`
           } else if (this.isPastDeadline()) {
-            this.submitBtnText = `${gameStart.fromNow()} until kickoff, you missed your chance to bet`
+            this.submitBtnText = `${gameStart.fromNow()} to kickoff, no bet placed`
           } else if (this.outcomeSelected) {
             this.submitBtnText = `Submit (${timeToDeadline} before lock)`
           } else {
-            this.submitBtnText = `Choose team (${timeToDeadline})`
+            this.submitBtnText = `Choose team (${timeToDeadline} before lock)`
           }
       }
       requestAnimationFrame(self.updateSubmitBtnText)
