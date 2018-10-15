@@ -2,25 +2,25 @@
 <v-container fluid text-xs-center>
     <v-layout row wrap class='grey lighten-4'>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="homeBtnClass">
-          <v-icon v-if="gameIsFinnished && selectedOutcome === 'home'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
-          <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'home') ? 'selectedTeamBtn' : ''}`" >
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice(game.homeTeam, 'home')" :class="homeBtnClass">
+          <v-icon v-if="submitted && selectedOutcome === 'home'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
+          <div :class="`body-1 btn-text teamBtn ${(submitted && selectedOutcome === 'home') ? 'selectedTeamBtn' : ''}`" >
             {{game.homeTeam}}
             </div>
         </v-card>
       </v-flex>
       <v-flex text-xs2-center md1>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="tieBtnClass">
-        <v-icon v-if="gameIsFinnished && selectedOutcome === 'tie'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
-          <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'tie') ? 'selectedTeamBtn' : ''}`" >
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice('-', 'tie')" :class="tieBtnClass">
+        <v-icon v-if="submitted && selectedOutcome === 'tie'" left color="green lighten-2" small class='selectedTeamCircle' >brightness_1</v-icon>
+          <div :class="`body-1 btn-text teamBtn ${(submitted && selectedOutcome === 'tie') ? 'selectedTeamBtn' : ''}`" >
             -
           </div>
         </v-card>
       </v-flex>
       <v-flex xs5 md4>
-        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice" :class="awayBtnClass">
-            <v-icon v-if="gameIsFinnished && selectedOutcome === 'away'" left color="green lighten-2" small class='selectedTeamCircle'>brightness_1</v-icon>
-            <div :class="`body-1 btn-text teamBtn ${(gameIsFinnished && selectedOutcome === 'away') ? 'selectedTeamBtn' : ''}`"  >
+        <v-card v-on:mouseleave="mouseLeave" v-on:mouseover="mouseOver" @click.native="toggleTeamChoice(game.awayTeam, 'away')" :class="awayBtnClass">
+            <v-icon v-if="submitted && selectedOutcome === 'away'" left color="green lighten-2" small class='selectedTeamCircle'>brightness_1</v-icon>
+            <div :class="`body-1 btn-text teamBtn ${(submitted && selectedOutcome === 'away') ? 'selectedTeamBtn' : ''}`"  >
               {{game.awayTeam}}
             </div>
         </v-card>
@@ -112,30 +112,44 @@ export default {
       }
       requestAnimationFrame(self.updateSubmitBtnText)
     },
-    toggleTeamChoice (event) {
+    markTeamBtns (outcome) {
+      const btnList = ['homeBtnClass', 'awayBtnClass', 'tieBtnClass']
+      let selectedBtn
+      switch (outcome) {
+        case 'home':
+          selectedBtn = btnList.splice(0, 1)
+          break
+        case 'away':
+          selectedBtn = btnList.splice(1, 1)
+          break
+        case 'tie':
+          selectedBtn = btnList.splice(2, 1)
+          break
+      }
+      this[selectedBtn[0]] = 'teal white--text'
+      btnList.forEach(btn => {
+        this[btn] = 'card btn--disabled'
+      })
+    },
+    resetTeamBtns () {
+      this.outcomeSelected = false
+      this.selectedOutcome = ''
+      this.selectedTeam = ''
+      const btnList = ['homeBtnClass', 'awayBtnClass', 'tieBtnClass']
+      btnList.forEach(btn => {
+        this[btn] = 'card indigo white--text'
+      })
+    },
+    toggleTeamChoice (teamChoice, outcome) {
       if (!this.locked && !this.submitted) {
         this.outcomeSelected = !this.outcomeSelected
-        const targetBtn = event.currentTarget
-        const targetBtnSiblings = targetBtn.parentNode.parentNode.childNodes
-        this.selectedTeam = event.currentTarget.innerText
+        this.selectedTeam = teamChoice
 
-        if (this.selectedTeam === '-') {
-          this.selectedOutcome = 'tie'
+        this.selectedOutcome = outcome
+        if (this.outcomeSelected) {
+          this.markTeamBtns(outcome)
         } else {
-          this.selectedOutcome = this.selectedTeam === this.game.awayTeam ? 'away' : 'home'
-        }
-
-        for (var i = 0; i < targetBtnSiblings.length; i++) {
-          const classList = targetBtnSiblings[i].firstChild.classList
-          if (classList && !classList.contains('submit') && classList.contains('card')) {
-            if (this.outcomeSelected) {
-              targetBtnSiblings[i].firstChild.className = 'card btn--disabled'
-              targetBtn.classList.replace('btn--disabled', 'teal')
-              targetBtn.classList.add('white--text')
-            } else {
-              targetBtnSiblings[i].firstChild.className = 'card indigo white--text'
-            }
-          }
+          this.resetTeamBtns()
         }
       }
     },
@@ -147,20 +161,15 @@ export default {
         this.outcomeSelected = true
         this.betSuccess = myBet.successful
         this.selectedOutcome = myBet.outcome
+        this.awayBtnClass = 'btn--disabled'
+        this.tieBtnClass = 'btn--disabled'
+        this.homeBtnClass = 'btn--disabled'
       }
     },
     setGameToClosed () {
       this.awayBtnClass = 'btn--disabled'
       this.tieBtnClass = 'btn--disabled'
       this.homeBtnClass = 'btn--disabled'
-
-      if (this.game.outcome === 'home') {
-        this.homeBtnClass = 'green white--text'
-      } else if (this.game.outcome === 'away') {
-        this.awayBtnClass = 'green white--text'
-      } else {
-        this.tieBtnClass = 'green white--text'
-      }
     },
     mouseLeave (event) {
       event.preventDefault()
@@ -173,10 +182,32 @@ export default {
         event.currentTarget.classList.add('lighten-1')
       }
     },
-    submit () {
+    async submit () {
       this.submitted = !this.submitted
       if (this.submitted) {
-        return utils.postBet(this.game.id, this.selectedTeam, this.selectedOutcome)
+        try {
+          await utils.postBet(this.game.id, this.selectedTeam, this.selectedOutcome)
+          const betInfo = {
+            username: localStorage.getItem('username'),
+            outcome: this.selectedOutcome,
+            isCurrentUsersBet: true
+          }
+          if (this.game.bets) {
+            const username = localStorage.getItem('username')
+            const currentUserBetIndex = this.game.bets.findIndex(bet => bet.username === username)
+            if (currentUserBetIndex >= 0) {
+              this.game.bets.splice(currentUserBetIndex, 1)
+            }
+            this.game.bets.push(betInfo)
+          } else {
+            this.game.bets = [betInfo]
+          }
+          this.updateGameFromDB()
+        } catch (error) {
+
+        }
+      } else {
+        this.resetTeamBtns()
       }
     }
   },
