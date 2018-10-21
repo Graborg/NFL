@@ -142,7 +142,7 @@
             id: 3
           },
           {
-            avatar: 'henrikj.jpg',
+            avatar: 'henrik2.png',
             name: 'Henry82',
             points: 0,
             streak: '-',
