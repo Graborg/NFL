@@ -1,4 +1,4 @@
-version: '3'
+version: '3.1'
 services:
   rethinkdb:
     image: rethinkdb
@@ -11,7 +11,7 @@ services:
 #     networks:
 #       - db
 #   nfl-api:
-#     image: graborg/nfl-api:1.4.1
+#     build: ../nfl-api
 #     depends_on:
 #       - rethinkdb
 #     environment:
@@ -24,6 +24,8 @@ services:
 #       - db
 #   nfl-ui:
 #     build: .
+#     environment:
+#       - API_URL=http://localhost:7331
 #     ports:
 #       - '3000:3000'
 #     networks:
