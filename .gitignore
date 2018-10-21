@@ -12,3 +12,4 @@ dist
 
 config.json
 .DS_Store
+static
