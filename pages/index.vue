@@ -50,9 +50,9 @@
           v-for="(gameWeek, gameWeekNo) in gameWeeks"
           :key="gameWeekNo"
           :lazy="true"
-          v-if="showWeek(gameWeekNo, gameWeek)"
-          :value="isCurrentWeek(gameWeekNo) && isMounted"
-          v-bind:class="{ 'teal lighten-2': isCurrentWeek(gameWeekNo) }"
+          v-if="showWeek(gameWeek[0].playDate)"
+          :value="isCurrentWeek(gameWeek[0].playDate) && isMounted"
+          v-bind:class="{ 'teal lighten-2': isCurrentWeek(gameWeek[0].playDate) }"
         >
           <div slot="header">Week {{gameWeekNo}}</div>
           <v-list>
@@ -209,14 +209,15 @@
         }
       },
       // Show week if within interval, or toggled showAllGames
-      showWeek: function (playWeekNo, playWeek) {
+      showWeek: function (playDate) {
         const lowestWeek = moment().isoWeek() - 1
         const highestWeek = moment().isoWeek() + 4 // 24
+        const weekNo = moment(playDate).subtract(2, 'days').isoWeek()
 
-        return (playWeekNo >= lowestWeek && playWeekNo <= highestWeek) || this.showAllGames
+        return (weekNo >= lowestWeek && weekNo <= highestWeek) || this.showAllGames
       },
-      isCurrentWeek (week) {
-        return moment().isoWeek() === parseInt(week)
+      isCurrentWeek (playDate) {
+        return moment().isSame(moment(playDate).subtract(2, 'days'), 'isoweek')
       },
       calculatePoints () {
         this.players = this.players.map(player =>
