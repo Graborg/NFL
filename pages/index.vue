@@ -178,6 +178,7 @@
         this.signedIn = false
         this.isMounted = false
         localStorage.removeItem('userId')
+        localStorage.removeItem('username')
       },
       signInUser: function (userId) {
         localStorage.setItem('userId', userId)
