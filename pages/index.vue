@@ -68,14 +68,28 @@
           </v-list>
         </v-expansion-panel-content>
       </v-expansion-panel>
+          <!-- <v-dialog
+          v-model="dialog"
+          width="500"
+          >
+        <v-card>
+        <v-card-title class="headline">{{error.title}}</v-card-title>
+
+        <v-card-text>
+          {{error.message}}
+        </v-card-text>
+
+      </v-card>
+  </v-dialog> -->
+
     </main>
     <!-- <log></log> -->
-  </v-app>
 
+  </v-app>
   <Auth v-else v-on:successfulAuth="signInUser">
   </Auth>
-</div>
 
+</div>
 </template>
 <script src="https://apis.google.com/js/platform.js" async defer></script>
 <script>
@@ -94,6 +108,11 @@
           { text: 'streak', value: 'streak', sortable: false, align: 'left', width: '20px' },
           { text: 'successRate', value: 'successRate', sortable: false, align: 'left' }
         ],
+        // dialog: true,
+        // error: {
+        //   title: '',
+        //   message: ''
+        // },
         players: [
           {
             avatar: 'croppedpuddi.jpg',
@@ -101,7 +120,8 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'lodin.jakob@gmail.com'
+            username: 'lodin.jakob@gmail.com',
+            id: 1
           },
           {
             avatar: 'nicke.png',
@@ -109,7 +129,8 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'coolniclas@gmail.com'
+            username: 'coolniclas@gmail.com',
+            id: 2
           },
           {
             avatar: 'namikosmall.jpg',
@@ -117,7 +138,8 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'carlfredrikhenning.stenberg@gmail.com'
+            username: 'carlfredrikhenning.stenberg@gmail.com',
+            id: 3
           },
           {
             avatar: 'henrikj.jpg',
@@ -125,7 +147,8 @@
             points: 0,
             streak: '-',
             successRate: '-',
-            username: 'henrik.1990@gmail.com'
+            username: 'henrik.1990@gmail.com',
+            id: 4
           }
         ],
         showAllGames: false,
@@ -154,34 +177,33 @@
         }
         this.signedIn = false
         this.isMounted = false
-        localStorage.removeItem('username')
+        localStorage.removeItem('userId')
       },
-      signInUser: function (username, token) {
-        if (username === 'intemicke@gmail.com') {
-          username = 'coolniclas@gmail.com'
-        } else if (username === 'mikael.graborg@iteam.com') {
-          username = 'carlfredrikhenning.stenberg@gmail.com'
-        }
-        const userIsValid = !!this.players.find(player => player.username === username)
-        if (userIsValid) {
-          localStorage.setItem('username', username)
-          return utils.getAuthCookie(token)
-            .then(() => { this.signedIn = true })
-            .then(() => this.loadMainPage())
-        }
+      signInUser: function (userId) {
+        localStorage.setItem('userId', userId)
+        this.signedIn = true
+        this.loadMainPage()
+      },
+      errorModal (title, message) {
+        this.dialog = true
+        this.error.title = title
+        this.error.message = message
       },
       async loadMainPage () {
         try {
-          console.log('load main page')
-          this.userDisplayName = this.players.find(player => player.username === localStorage.getItem('username')).name
-          this.gameWeeks = await utils.getGamesAndBets(localStorage.getItem('username'))
+          console.log('load main page for', localStorage.getItem('userId'))
+          const player = this.players.find(player => player.id === parseInt(localStorage.getItem('userId')))
+          this.userDisplayName = player.name
+          this.gameWeeks = await utils.getGamesAndBets(player.username)
+          localStorage.setItem('username', player.username)
           this.bets = await utils.getBets()
-          this.setCurrentPlayer()
+          this.setCurrentPlayer(player.username)
           this.calculatePoints()
           setTimeout(() => {
             this.isMounted = true
           }, 500)
         } catch (error) {
+          console.error('Could not load main page:', error)
           this.logout()
         }
       },
@@ -213,10 +235,10 @@
       calculateSuccessRate () {
         return 0
       },
-      setCurrentPlayer () {
+      setCurrentPlayer (username) {
         this.players = this.players.map(player =>
           Object.assign({}, player, {
-            isCurrentPlayer: player.username === localStorage.getItem('username')
+            isCurrentPlayer: player.username === username
           })
         )
       },
@@ -226,10 +248,10 @@
     },
     components: {Game, Auth},
     async mounted () {
-      gapi.load('auth2', function () { // Ready. });
+      gapi.load('auth2', function () {
         console.log('loaded')
       })
-      this.signedIn = !!localStorage.getItem('username')
+      this.signedIn = !!localStorage.getItem('userId')
       if (this.signedIn) {
         await this.loadMainPage()
       }

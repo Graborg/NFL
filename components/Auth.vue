@@ -1,11 +1,25 @@
 /* global gapi */
 <template>
+<v-app >
     <v-container fluid class='login'>
       <div id="google-signin-btn"></div>
+
+    <v-dialog
+    v-model="dialog"
+    width="500"
+    >
+    <v-card>
+      <v-card-title class="headline">{{error.title}}</v-card-title>
+      <v-card-text>
+        {{error.message}}
+      </v-card-text>
+    </v-card>
+    </v-dialog>
     </v-container>
+</v-app>
 </template>
 <script>
-
+const utils = require('../utils')
 export default {
   name: 'Login',
   head: {
@@ -18,13 +32,32 @@ export default {
   },
   data: function (router) {
     return {
+      dialog: false,
+      error: {
+        title: '',
+        message: ''
+      }
     }
   },
   methods: {
-    onSignIn: function (googleUser) {
+    onSignIn: async function (googleUser) {
       const authRes = googleUser.getAuthResponse(true)
-      const email = googleUser.getBasicProfile().getEmail()
-      this.$emit('successfulAuth', email, authRes.id_token)
+      try {
+        const res = await utils.getAuthCookie(authRes.id_token)
+        const data = await res.json()
+        if (!res.ok) {
+          throw Error(data)
+        }
+        this.$emit('successfulAuth', data.userId)
+      } catch (error) {
+        console.error(error)
+        this.errorModal('Login failed', `Sorry, ${error.message}`)
+      }
+    },
+    errorModal (title, message) {
+      this.dialog = true
+      this.error.title = title
+      this.error.message = message
     }
   },
   mounted () {
